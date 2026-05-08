@@ -1,0 +1,201 @@
+{% extends 'base.html' %}
+{% block title %}Inventory Report{% endblock %}
+{% block page_title %}Inventory Report{% endblock %}
+{% block content %}
+
+<style>
+  @media print {
+    nav, aside, .no-print, header { display: none !important; }
+    body { background: white !important; }
+  }
+</style>
+
+<!-- Header -->
+<div class="flex justify-between items-center mb-6 no-print">
+  <div>
+    <h2 class="text-2xl font-bold text-gray-800">Inventory Report</h2>
+    <p class="text-gray-500 text-sm mt-1">Current stock levels and product performance.</p>
+  </div>
+  <div class="flex gap-2">
+    <button onclick="window.print()"
+      class="bg-gray-700 text-white px-4 py-2 rounded-lg text-sm hover:bg-gray-800 transition flex items-center gap-1">
+      <i class="fas fa-print"></i> Print / PDF
+    </button>
+    <a href="/dashboard/reports/" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm hover:bg-gray-300 transition">
+      ← Back
+    </a>
+  </div>
+</div>
+
+<!-- Summary Cards -->
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+  <div class="bg-white rounded-xl shadow px-5 py-4">
+    <p class="text-xs text-gray-400 uppercase tracking-wide">Total Products</p>
+    <p class="text-xl font-bold text-gray-700 mt-1">{{ total_products }}</p>
+  </div>
+  <div class="bg-white rounded-xl shadow px-5 py-4">
+    <p class="text-xs text-gray-400 uppercase tracking-wide">Active</p>
+    <p class="text-xl font-bold text-green-600 mt-1">{{ active_products }}</p>
+  </div>
+  <div class="bg-white rounded-xl shadow px-5 py-4">
+    <p class="text-xs text-gray-400 uppercase tracking-wide">Low Stock</p>
+    <p class="text-xl font-bold text-yellow-500 mt-1">{{ low_stock.count }}</p>
+  </div>
+  <div class="bg-white rounded-xl shadow px-5 py-4">
+    <p class="text-xs text-gray-400 uppercase tracking-wide">Out of Stock</p>
+    <p class="text-xl font-bold text-red-500 mt-1">{{ out_of_stock.count }}</p>
+  </div>
+  <div class="bg-white rounded-xl shadow px-5 py-4 col-span-2 md:col-span-1">
+    <p class="text-xs text-gray-400 uppercase tracking-wide">Stock Value (Cost)</p>
+    <p class="text-lg font-bold text-blue-600 mt-1">KES {{ total_stock_value|floatformat:2 }}</p>
+  </div>
+  <div class="bg-white rounded-xl shadow px-5 py-4 col-span-2 md:col-span-1">
+    <p class="text-xs text-gray-400 uppercase tracking-wide">Retail Value</p>
+    <p class="text-lg font-bold text-purple-600 mt-1">KES {{ total_retail_value|floatformat:2 }}</p>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+
+  <!-- Low Stock Alerts -->
+  <div class="bg-white rounded-xl shadow p-5">
+    <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4 flex items-center gap-2">
+      <span class="text-yellow-500">⚠</span> Low Stock Alerts
+    </h3>
+    {% if low_stock %}
+    <div class="space-y-2">
+      {% for p in low_stock %}
+      <div class="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
+        <div>
+          <p class="text-sm font-medium text-gray-800">{{ p.name }}</p>
+          <p class="text-xs text-gray-400">SKU: {{ p.sku }}</p>
+        </div>
+        <div class="text-right">
+          <span class="{% if p.stock == 0 %}bg-red-100 text-red-700{% else %}bg-yellow-100 text-yellow-700{% endif %} px-3 py-1 rounded-full text-xs font-bold">
+            {{ p.stock }} left
+          </span>
+          <p class="text-xs text-gray-400 mt-0.5">Alert: {{ p.low_stock_alert }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-8 text-gray-400">
+      <i class="fas fa-check-circle text-3xl text-green-400 mb-2 block"></i>
+      <p class="text-sm">All stock levels are healthy!</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Category Breakdown -->
+  <div class="bg-white rounded-xl shadow p-5">
+    <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">By Category</h3>
+    {% if categories %}
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="text-xs text-gray-400 uppercase border-b border-gray-100">
+          <th class="py-2 text-left">Category</th>
+          <th class="py-2 text-right">Products</th>
+          <th class="py-2 text-right">Total Stock</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-50">
+        {% for cat in categories %}
+        <tr>
+          <td class="py-2 font-medium text-gray-800">{{ cat.name }}</td>
+          <td class="py-2 text-right text-gray-500">{{ cat.product_count }}</td>
+          <td class="py-2 text-right font-semibold text-gray-700">{{ cat.total_stock|default:0 }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="text-gray-400 text-sm">No categories found.</p>
+    {% endif %}
+  </div>
+
+</div>
+
+<!-- Best Sellers -->
+<div class="bg-white rounded-xl shadow p-5 mb-6">
+  <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
+    <i class="fas fa-fire text-orange-400 mr-1"></i> Best Selling Products
+  </h3>
+  {% if best_sellers %}
+  <table class="w-full text-sm">
+    <thead>
+      <tr class="text-xs text-gray-400 uppercase border-b border-gray-100">
+        <th class="py-2 text-left">#</th>
+        <th class="py-2 text-left">Product</th>
+        <th class="py-2 text-left">SKU</th>
+        <th class="py-2 text-right">Units Sold</th>
+        <th class="py-2 text-right">Revenue (KES)</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-50">
+      {% for item in best_sellers %}
+      <tr class="hover:bg-gray-50">
+        <td class="py-2 text-gray-400">{{ forloop.counter }}</td>
+        <td class="py-2 font-medium text-gray-800">{{ item.product__name }}</td>
+        <td class="py-2 text-gray-400 font-mono text-xs">{{ item.product__sku }}</td>
+        <td class="py-2 text-right font-semibold text-gray-700">{{ item.total_qty }}</td>
+        <td class="py-2 text-right font-semibold text-blue-600">{{ item.total_revenue|floatformat:2 }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="text-gray-400 text-sm text-center py-6">No sales data yet.</p>
+  {% endif %}
+</div>
+
+<!-- Full Product Table -->
+<div class="bg-white rounded-xl shadow overflow-hidden mb-8">
+  <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center">
+    <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider">All Products</h3>
+    <span class="text-xs text-gray-400">{{ total_products }} total</span>
+  </div>
+  <table class="w-full text-sm">
+    <thead>
+      <tr class="bg-gray-50 text-xs text-gray-400 uppercase">
+        <th class="px-5 py-3 text-left">Product</th>
+        <th class="px-5 py-3 text-left">SKU</th>
+        <th class="px-5 py-3 text-left">Category</th>
+        <th class="px-5 py-3 text-right">Cost</th>
+        <th class="px-5 py-3 text-right">Price</th>
+        <th class="px-5 py-3 text-right">Stock</th>
+        <th class="px-5 py-3 text-center">Status</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-50">
+      {% for p in products %}
+      <tr class="hover:bg-gray-50 {% if p.stock == 0 %}bg-red-50{% elif p.is_low_stock %}bg-yellow-50{% endif %}">
+        <td class="px-5 py-3 font-medium text-gray-800">{{ p.name }}</td>
+        <td class="px-5 py-3 text-gray-400 font-mono text-xs">{{ p.sku }}</td>
+        <td class="px-5 py-3 text-gray-500">{{ p.category.name|default:"—" }}</td>
+        <td class="px-5 py-3 text-right text-gray-600">{{ p.cost_price|floatformat:2 }}</td>
+        <td class="px-5 py-3 text-right font-semibold text-gray-800">{{ p.price|floatformat:2 }}</td>
+        <td class="px-5 py-3 text-right font-bold
+          {% if p.stock == 0 %}text-red-600
+          {% elif p.is_low_stock %}text-yellow-600
+          {% else %}text-green-600{% endif %}">
+          {{ p.stock }}
+        </td>
+        <td class="px-5 py-3 text-center">
+          {% if p.stock == 0 %}
+            <span class="bg-red-100 text-red-700 px-2 py-0.5 rounded-full text-xs">Out of Stock</span>
+          {% elif p.is_low_stock %}
+            <span class="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full text-xs">Low Stock</span>
+          {% elif p.is_active %}
+            <span class="bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs">Active</span>
+          {% else %}
+            <span class="bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full text-xs">Inactive</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

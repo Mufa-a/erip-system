@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% block title %}Stock Movements{% endblock %}
+{% block page_title %}Stock Movements{% endblock %}
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+    <!-- Form -->
+    <div class="bg-white rounded-xl shadow p-6">
+        <h3 class="text-lg font-semibold text-gray-700 mb-4">Add Movement</h3>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Product *</label>
+                    <select name="product"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                        <option value="">-- Select Product --</option>
+                        {% for product in products %}
+                        <option value="{{ product.pk }}">{{ product.name }} ({{ product.stock }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Movement Type *</label>
+                    <select name="movement_type"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="in">Stock In</option>
+                        <option value="out">Stock Out</option>
+                        <option value="adjust">Adjust</option>
+                        <option value="return">Return</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Quantity *</label>
+                    <input type="number" name="quantity" min="1"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="0" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Reference</label>
+                    <input type="text" name="reference"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="e.g. PO-001">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                    <textarea name="notes" rows="2"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                </div>
+                <button type="submit"
+                    class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition font-medium">
+                    <i class="fas fa-save mr-2"></i>Save Movement
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Recent Movements -->
+    <div class="lg:col-span-2 bg-white rounded-xl shadow p-6">
+        <h3 class="text-lg font-semibold text-gray-700 mb-4">Recent Movements</h3>
+        {% if movements %}
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="bg-gray-50 text-gray-600 uppercase text-xs">
+                    <th class="px-4 py-3 text-left">Product</th>
+                    <th class="px-4 py-3 text-left">Type</th>
+                    <th class="px-4 py-3 text-left">Qty</th>
+                    <th class="px-4 py-3 text-left">By</th>
+                    <th class="px-4 py-3 text-left">Date</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                {% for movement in movements %}
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-3 font-medium text-gray-800">{{ movement.product.name }}</td>
+                    <td class="px-4 py-3">
+                        {% if movement.movement_type == 'in' %}
+                        <span class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs">IN</span>
+                        {% elif movement.movement_type == 'out' %}
+                        <span class="bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs">OUT</span>
+                        {% else %}
+                        <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs">{{ movement.movement_type|upper }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-4 py-3 font-bold text-gray-800">{{ movement.quantity }}</td>
+                    <td class="px-4 py-3 text-gray-600">{{ movement.created_by.username|default:"-" }}</td>
+                    <td class="px-4 py-3 text-gray-500 text-xs">{{ movement.created_at|date:"d M Y H:i" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="text-center py-12 text-gray-400">
+            <i class="fas fa-exchange-alt text-4xl mb-3"></i>
+            <p>No movements yet.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

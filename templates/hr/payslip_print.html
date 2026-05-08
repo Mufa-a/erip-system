@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Payslip - {{ payroll.employee.full_name }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+            body { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-8">
+<div class="no-print flex space-x-3 mb-6 max-w-2xl mx-auto">
+    <button onclick="window.print()"
+        class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">
+        <i class="fas fa-print mr-2"></i>Print Payslip
+    </button>
+    <a href="{% url 'payroll_detail' payroll.pk %}"
+        class="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg">← Back</a>
+</div>
+
+<div class="bg-white max-w-2xl mx-auto rounded-xl shadow-lg p-8">
+    <div class="flex justify-between items-start mb-6 border-b pb-6">
+        <div>
+            <h1 class="text-2xl font-bold text-blue-600">⚡ ERP System</h1>
+            <p class="text-gray-500 text-sm">Nairobi, Kenya</p>
+        </div>
+        <div class="text-right">
+            <h2 class="text-xl font-bold text-gray-800">PAYSLIP</h2>
+            <p class="text-gray-500 text-sm">{{ payroll.month|date:"F Y" }}</p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4 mb-6 text-sm">
+        <div>
+            <p class="text-gray-500">Employee Name</p>
+            <p class="font-bold text-gray-800">{{ payroll.employee.full_name }}</p>
+        </div>
+        <div>
+            <p class="text-gray-500">Employee Number</p>
+            <p class="font-bold text-gray-800">{{ payroll.employee.employee_number }}</p>
+        </div>
+        <div>
+            <p class="text-gray-500">Department</p>
+            <p class="font-bold text-gray-800">{{ payroll.employee.get_department_display }}</p>
+        </div>
+        <div>
+            <p class="text-gray-500">Employment Type</p>
+            <p class="font-bold text-gray-800">{{ payroll.employee.get_employment_type_display }}</p>
+        </div>
+        {% if payroll.employee.kra_pin %}
+        <div>
+            <p class="text-gray-500">KRA PIN</p>
+            <p class="font-bold text-gray-800">{{ payroll.employee.kra_pin }}</p>
+        </div>
+        {% endif %}
+        {% if payroll.employee.nssf_number %}
+        <div>
+            <p class="text-gray-500">NSSF No.</p>
+            <p class="font-bold text-gray-800">{{ payroll.employee.nssf_number }}</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="grid grid-cols-2 gap-4 mb-6">
+        <div class="bg-green-50 rounded-lg p-4">
+            <h4 class="font-semibold text-green-700 mb-3 text-sm uppercase">Earnings</h4>
+            <div class="space-y-2 text-sm">
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Basic Salary</span>
+                    <span>KES {{ payroll.basic_salary|floatformat:2 }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Allowances</span>
+                    <span>KES {{ payroll.allowances|floatformat:2 }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Overtime</span>
+                    <span>KES {{ payroll.overtime|floatformat:2 }}</span>
+                </div>
+                <div class="flex justify-between font-bold border-t pt-2">
+                    <span>Gross</span>
+                    <span class="text-green-700">KES {{ payroll.gross_salary|floatformat:2 }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="bg-red-50 rounded-lg p-4">
+            <h4 class="font-semibold text-red-700 mb-3 text-sm uppercase">Deductions</h4>
+            <div class="space-y-2 text-sm">
+                <div class="flex justify-between">
+                    <span class="text-gray-600">PAYE</span>
+                    <span>KES {{ payroll.paye|floatformat:2 }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">NSSF</span>
+                    <span>KES {{ payroll.nssf|floatformat:2 }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">NHIF</span>
+                    <span>KES {{ payroll.nhif|floatformat:2 }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Other</span>
+                    <span>KES {{ payroll.other_deductions|floatformat:2 }}</span>
+                </div>
+                <div class="flex justify-between font-bold border-t pt-2">
+                    <span>Total</span>
+                    <span class="text-red-700">KES {{ payroll.total_deductions|floatformat:2 }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-blue-600 text-white rounded-xl p-4 text-center mb-6">
+        <p class="text-sm opacity-80">NET PAY</p>
+        <p class="text-3xl font-bold">KES {{ payroll.net_salary|floatformat:2 }}</p>
+    </div>
+
+    <div class="grid grid-cols-2 gap-8 mt-8 pt-6 border-t">
+        <div>
+            <div class="border-b border-gray-400 mb-1 h-8"></div>
+            <p class="text-xs text-gray-500">Employee Signature</p>
+        </div>
+        <div>
+            <div class="border-b border-gray-400 mb-1 h-8"></div>
+            <p class="text-xs text-gray-500">Authorized Signature</p>
+        </div>
+    </div>
+</div>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</body>
+</html>

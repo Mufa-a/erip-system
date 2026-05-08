@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+{% block title %}Super Admin — Billing{% endblock %}
+{% block page_title %}Super Admin — Subscription Overview{% endblock %}
+
+{% block content %}
+
+<!-- Stats -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+        <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/50 rounded-xl flex items-center justify-center mb-3">
+            <i class="fas fa-building text-blue-600 dark:text-blue-400 text-xl"></i>
+        </div>
+        <p class="text-3xl font-bold text-gray-800 dark:text-white">{{ total_companies }}</p>
+        <p class="text-sm text-gray-500 mt-1">Total Companies</p>
+    </div>
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+        <div class="w-12 h-12 bg-green-100 dark:bg-green-900/50 rounded-xl flex items-center justify-center mb-3">
+            <i class="fas fa-money-bill text-green-600 dark:text-green-400 text-xl"></i>
+        </div>
+        <p class="text-3xl font-bold text-gray-800 dark:text-white">KES {{ total_revenue|floatformat:0 }}</p>
+        <p class="text-sm text-gray-500 mt-1">Total Revenue</p>
+    </div>
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+        <div class="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/50 rounded-xl flex items-center justify-center mb-3">
+            <i class="fas fa-clock text-yellow-600 dark:text-yellow-400 text-xl"></i>
+        </div>
+        <p class="text-3xl font-bold text-gray-800 dark:text-white">{{ expiring_soon|length }}</p>
+        <p class="text-sm text-gray-500 mt-1">Expiring in 7 Days</p>
+    </div>
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+        <div class="w-12 h-12 bg-red-100 dark:bg-red-900/50 rounded-xl flex items-center justify-center mb-3">
+            <i class="fas fa-times-circle text-red-600 dark:text-red-400 text-xl"></i>
+        </div>
+        <p class="text-3xl font-bold text-gray-800 dark:text-white">{{ expired|length }}</p>
+        <p class="text-sm text-gray-500 mt-1">Expired</p>
+    </div>
+</div>
+
+<!-- Expiring Soon Alert -->
+{% if expiring_soon %}
+<div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-300 dark:border-yellow-700 rounded-xl p-4 mb-6">
+    <p class="font-semibold text-yellow-800 dark:text-yellow-400 mb-2">
+        <i class="fas fa-exclamation-triangle mr-2"></i>
+        {{ expiring_soon|length }} company subscription{{ expiring_soon|length|pluralize }} expiring soon!
+    </p>
+    <div class="flex flex-wrap gap-2">
+        {% for company in expiring_soon %}
+        <span class="bg-yellow-100 dark:bg-yellow-900/50 text-yellow-700 dark:text-yellow-300 px-3 py-1 rounded-full text-sm">
+            {{ company.name }} — {{ company.plan_expires }}
+        </span>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- All Companies Table -->
+<div class="bg-white dark:bg-gray-800 rounded-2xl shadow p-6 mb-6">
+    <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-4">
+        <i class="fas fa-building text-blue-500 mr-2"></i>All Companies
+    </h3>
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400 uppercase text-xs">
+                    <th class="px-4 py-3 text-left rounded-l-lg">Company</th>
+                    <th class="px-4 py-3 text-left">Plan</th>
+                    <th class="px-4 py-3 text-left">Users</th>
+                    <th class="px-4 py-3 text-left">Expires</th>
+                    <th class="px-4 py-3 text-left">Total Paid</th>
+                    <th class="px-4 py-3 text-left rounded-r-lg">Status</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                {% for company in companies %}
+                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/30">
+                    <td class="px-4 py-3">
+                        <p class="font-medium text-gray-800 dark:text-white">{{ company.name }}</p>
+                        <p class="text-xs text-gray-400">{{ company.city }}</p>
+                    </td>
+                    <td class="px-4 py-3">
+                        <span class="px-2 py-1 rounded-full text-xs font-medium
+                            {% if company.plan == 'business' %}bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300
+                            {% elif company.plan == 'enterprise' %}bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300
+                            {% else %}bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400{% endif %}">
+                            {{ company.plan|title }}
+                        </span>
+                    </td>
+                    <td class="px-4 py-3 text-gray-600 dark:text-gray-400">
+                        {{ company.user_count }} / {{ company.max_users }}
+                    </td>
+                    <td class="px-4 py-3 text-gray-600 dark:text-gray-400">
+                        {% if company.plan_expires %}
+                            {{ company.plan_expires }}
+                            {% if company.plan_expires <= today %}
+                            <span class="text-red-500 text-xs ml-1">Expired</span>
+                            {% endif %}
+                        {% else %}—{% endif %}
+                    </td>
+                    <td class="px-4 py-3 font-medium text-green-700 dark:text-green-400">
+                        KES {{ company.subscription_payments.filter.count }}
+                        {% with total=company.subscription_payments.all %}
+                        KES {% for p in total %}{% if forloop.last %}{{ p.amount|floatformat:0 }}{% endif %}{% endfor %}
+                        {% endwith %}
+                    </td>
+                    <td class="px-4 py-3">
+                        {% if company.is_subscription_active %}
+                        <span class="bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-400 px-2 py-1 rounded-full text-xs">
+                            <i class="fas fa-check mr-1"></i>Active
+                        </span>
+                        {% else %}
+                        <span class="bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-400 px-2 py-1 rounded-full text-xs">
+                            <i class="fas fa-times mr-1"></i>Expired
+                        </span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Recent Payments -->
+<div class="bg-white dark:bg-gray-800 rounded-2xl shadow p-6">
+    <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-4">
+        <i class="fas fa-history text-green-500 mr-2"></i>Recent Payments
+    </h3>
+    <table class="w-full text-sm">
+        <thead>
+            <tr class="bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400 uppercase text-xs">
+                <th class="px-4 py-3 text-left">Date</th>
+                <th class="px-4 py-3 text-left">Company</th>
+                <th class="px-4 py-3 text-left">Plan</th>
+                <th class="px-4 py-3 text-left">Months</th>
+                <th class="px-4 py-3 text-left">Amount</th>
+                <th class="px-4 py-3 text-left">Reference</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+            {% for payment in recent_payments %}
+            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/30">
+                <td class="px-4 py-3 text-gray-500 dark:text-gray-400">{{ payment.created_at|date:"d M Y" }}</td>
+                <td class="px-4 py-3 font-medium text-gray-800 dark:text-white">{{ payment.company.name }}</td>
+                <td class="px-4 py-3">
+                    <span class="px-2 py-1 rounded-full text-xs font-medium
+                        {% if payment.plan == 'business' %}bg-blue-100 text-blue-700
+                        {% elif payment.plan == 'enterprise' %}bg-purple-100 text-purple-700
+                        {% else %}bg-gray-100 text-gray-600{% endif %}">
+                        {{ payment.plan|title }}
+                    </span>
+                </td>
+                <td class="px-4 py-3 text-gray-600 dark:text-gray-400">{{ payment.months_paid }}mo</td>
+                <td class="px-4 py-3 font-bold text-green-700 dark:text-green-400">KES {{ payment.amount|floatformat:0 }}</td>
+                <td class="px-4 py-3 font-mono text-xs text-gray-400">{{ payment.reference|default:"—" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

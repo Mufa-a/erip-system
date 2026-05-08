@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<!-- Top Stats -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+
+    <div class="stat-card bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+        <div class="flex items-center justify-between mb-3">
+            <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/50 rounded-xl flex items-center justify-center">
+                <i class="fas fa-users text-blue-600 dark:text-blue-400 text-xl"></i>
+            </div>
+            <span class="text-xs text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full">Total</span>
+        </div>
+        <p class="text-3xl font-bold text-gray-800 dark:text-white">{{ total_customers }}</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Customers</p>
+    </div>
+
+    <div class="stat-card bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+        <div class="flex items-center justify-between mb-3">
+            <div class="w-12 h-12 bg-green-100 dark:bg-green-900/50 rounded-xl flex items-center justify-center">
+                <i class="fas fa-money-bill text-green-600 dark:text-green-400 text-xl"></i>
+            </div>
+            <span class="text-xs text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/30 px-2 py-1 rounded-full">This Month</span>
+        </div>
+        <p class="text-3xl font-bold text-gray-800 dark:text-white">
+            {% if request.company %}{{ request.company.currency }}{% else %}KES{% endif %}
+            {{ month_revenue }}
+        </p>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Revenue</p>
+    </div>
+
+    <div class="stat-card bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+        <div class="flex items-center justify-between mb-3">
+            <div class="w-12 h-12 bg-red-100 dark:bg-red-900/50 rounded-xl flex items-center justify-center">
+                <i class="fas fa-clock text-red-600 dark:text-red-400 text-xl"></i>
+            </div>
+            <span class="text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 px-2 py-1 rounded-full">
+                {{ overdue_count }} overdue
+            </span>
+        </div>
+        <p class="text-3xl font-bold text-gray-800 dark:text-white">
+            {% if request.company %}{{ request.company.currency }}{% else %}KES{% endif %}
+            {{ unpaid_total }}
+        </p>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Outstanding</p>
+    </div>
+
+    <div class="stat-card bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+        <div class="flex items-center justify-between mb-3">
+            <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900/50 rounded-xl flex items-center justify-center">
+                <i class="fas fa-box text-purple-600 dark:text-purple-400 text-xl"></i>
+            </div>
+            <span class="text-xs text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/30 px-2 py-1 rounded-full">
+                {{ low_stock|length }} low
+            </span>
+        </div>
+        <p class="text-3xl font-bold text-gray-800 dark:text-white">{{ total_products }}</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Products</p>
+    </div>
+
+</div>
+
+<!-- Invoice Status -->
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6 mb-6">
+    <div class="flex items-center justify-between mb-4">
+        <h3 class="font-semibold text-gray-700 dark:text-gray-200">Invoice Overview</h3>
+        <a href="{% url 'invoice_list' %}" class="text-blue-500 text-sm hover:underline">View all →</a>
+    </div>
+    <div class="grid grid-cols-3 gap-4 text-center">
+        <div class="bg-green-50 dark:bg-green-900/30 rounded-lg p-4">
+            <p class="text-2xl font-bold text-green-700 dark:text-green-400">{{ paid_count }}</p>
+            <p class="text-sm text-green-600 dark:text-green-500">Paid</p>
+        </div>
+        <div class="bg-yellow-50 dark:bg-yellow-900/30 rounded-lg p-4">
+            <p class="text-2xl font-bold text-yellow-700 dark:text-yellow-400">{{ unpaid_count }}</p>
+            <p class="text-sm text-yellow-600 dark:text-yellow-500">Unpaid</p>
+        </div>
+        <div class="bg-red-50 dark:bg-red-900/30 rounded-lg p-4">
+            <p class="text-2xl font-bold text-red-700 dark:text-red-400">{{ overdue_count }}</p>
+            <p class="text-sm text-red-600 dark:text-red-500">Overdue</p>
+        </div>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+
+    <!-- Recent Invoices -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="font-semibold text-gray-700 dark:text-gray-200">Recent Invoices</h3>
+            <a href="{% url 'invoice_list' %}" class="text-blue-500 text-sm hover:underline">View all →</a>
+        </div>
+        {% if recent_invoices %}
+        <div class="space-y-3">
+            {% for invoice in recent_invoices %}
+            <div class="flex items-center justify-between py-2 border-b border-gray-50 dark:border-gray-700">
+                <div>
+                    <a href="{% url 'invoice_detail' invoice.pk %}"
+                        class="font-mono text-xs text-blue-600 dark:text-blue-400 hover:underline">
+                        #{{ invoice.invoice_number }}
+                    </a>
+                    <p class="text-sm text-gray-700 dark:text-gray-300">{{ invoice.customer.name }}</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-sm font-bold text-gray-800 dark:text-white">
+                        {% if request.company %}{{ request.company.currency }}{% else %}KES{% endif %}
+                        {{ invoice.total|floatformat:2 }}
+                    </p>
+                    {% if invoice.status == 'paid' %}
+                    <span class="bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-400 px-2 py-0.5 rounded-full text-xs">Paid</span>
+                    {% elif invoice.status == 'overdue' %}
+                    <span class="bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-400 px-2 py-0.5 rounded-full text-xs">Overdue</span>
+                    {% elif invoice.status == 'partial' %}
+                    <span class="bg-yellow-100 dark:bg-yellow-900/50 text-yellow-700 dark:text-yellow-400 px-2 py-0.5 rounded-full text-xs">Partial</span>
+                    {% else %}
+                    <span class="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 px-2 py-0.5 rounded-full text-xs">
+                        {{ invoice.get_status_display }}
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-gray-400 text-sm text-center py-6">No invoices yet.</p>
+        {% endif %}
+    </div>
+
+    <!-- Recent Payments -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="font-semibold text-gray-700 dark:text-gray-200">Recent Payments</h3>
+            <a href="{% url 'payment_list' %}" class="text-blue-500 text-sm hover:underline">View all →</a>
+        </div>
+        {% if recent_payments %}
+        <div class="space-y-3">
+            {% for payment in recent_payments %}
+            <div class="flex items-center justify-between py-2 border-b border-gray-50 dark:border-gray-700">
+                <div>
+                    <p class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        {{ payment.invoice.customer.name }}
+                    </p>
+                    <p class="text-xs text-gray-400">
+                        {{ payment.get_method_display }} • {{ payment.payment_date }}
+                    </p>
+                </div>
+                <p class="text-sm font-bold text-green-700 dark:text-green-400">
+                    +{% if request.company %}{{ request.company.currency }}{% else %}KES{% endif %}
+                    {{ payment.amount|floatformat:2 }}
+                </p>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-gray-400 text-sm text-center py-6">No payments yet.</p>
+        {% endif %}
+    </div>
+
+</div>
+
+<!-- Low Stock -->
+{% if low_stock %}
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+    <div class="flex items-center justify-between mb-4">
+        <h3 class="font-semibold text-gray-700 dark:text-gray-200">
+            <i class="fas fa-exclamation-triangle text-orange-500 mr-2"></i>
+            Low Stock Alerts ({{ low_stock|length }} items)
+        </h3>
+        <a href="{% url 'inventory_list' %}" class="text-blue-500 text-sm hover:underline">
+            Manage →
+        </a>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+        {% for product in low_stock %}
+        <div class="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg p-3 flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-800 dark:text-gray-200">{{ product.name }}</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400">{{ product.sku }}</p>
+            </div>
+            <div class="text-right">
+                <p class="text-lg font-bold text-orange-600 dark:text-orange-400">{{ product.stock }}</p>
+                <p class="text-xs text-gray-400">min {{ product.low_stock_alert }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}

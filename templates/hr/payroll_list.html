@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block title %}Payroll{% endblock %}
+{% block page_title %}Payroll{% endblock %}
+{% block content %}
+<div class="bg-white rounded-xl shadow p-6">
+    <div class="flex items-center justify-between mb-6">
+        <h3 class="text-lg font-semibold text-gray-700">Payroll Records</h3>
+        <div class="flex space-x-2">
+            <a href="{% url 'employee_list' %}"
+                class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition">
+                <i class="fas fa-users"></i> Employees
+            </a>
+            <a href="{% url 'payroll_generate' %}"
+                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                <i class="fas fa-plus"></i> Generate Payroll
+            </a>
+        </div>
+    </div>
+    {% if payrolls %}
+    <table class="w-full text-sm">
+        <thead>
+            <tr class="bg-gray-50 text-gray-600 uppercase text-xs">
+                <th class="px-4 py-3 text-left">Employee</th>
+                <th class="px-4 py-3 text-left">Month</th>
+                <th class="px-4 py-3 text-left">Gross</th>
+                <th class="px-4 py-3 text-left">Deductions</th>
+                <th class="px-4 py-3 text-left">Net Pay</th>
+                <th class="px-4 py-3 text-left">Status</th>
+                <th class="px-4 py-3 text-left">Actions</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+            {% for p in payrolls %}
+            <tr class="hover:bg-gray-50">
+                <td class="px-4 py-3 font-medium text-gray-800">{{ p.employee.full_name }}</td>
+                <td class="px-4 py-3 text-gray-600">{{ p.month|date:"F Y" }}</td>
+                <td class="px-4 py-3 text-gray-800">KES {{ p.gross_salary|floatformat:2 }}</td>
+                <td class="px-4 py-3 text-red-600">KES {{ p.total_deductions|floatformat:2 }}</td>
+                <td class="px-4 py-3 font-bold text-green-700">KES {{ p.net_salary|floatformat:2 }}</td>
+                <td class="px-4 py-3">
+                    {% if p.status == 'paid' %}
+                    <span class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs">Paid</span>
+                    {% elif p.status == 'approved' %}
+                    <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs">Approved</span>
+                    {% else %}
+                    <span class="bg-gray-100 text-gray-700 px-2 py-1 rounded-full text-xs">Draft</span>
+                    {% endif %}
+                </td>
+                <td class="px-4 py-3">
+                    <div class="flex space-x-2">
+                        <a href="{% url 'payroll_detail' p.pk %}"
+                            class="bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-xs">
+                            <i class="fas fa-eye"></i> View
+                        </a>
+                        <a href="{% url 'payslip_print' p.pk %}"
+                            class="bg-gray-100 text-gray-700 px-3 py-1 rounded-lg text-xs" target="_blank">
+                            <i class="fas fa-print"></i>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="text-center py-12 text-gray-400">
+        <i class="fas fa-money-check-alt text-4xl mb-3"></i>
+        <p>No payroll records yet.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice #{{ invoice.invoice_number }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+            body { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-8">
+
+<!-- Print Button -->
+<div class="no-print flex space-x-3 mb-6 max-w-3xl mx-auto">
+    <button onclick="window.print()"
+        class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition font-medium">
+        <i class="fas fa-print mr-2"></i>Print Invoice
+    </button>
+    <a href="{% url 'invoice_detail' invoice.pk %}"
+        class="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-300 transition">
+        ← Back
+    </a>
+</div>
+
+<!-- Invoice Paper -->
+<div class="bg-white max-w-3xl mx-auto rounded-xl shadow-lg p-10">
+
+    <!-- Header -->
+    <div class="flex justify-between items-start mb-10">
+        <div>
+            <h1 class="text-3xl font-bold text-blue-600">⚡ ERP System</h1>
+            <p class="text-gray-500 text-sm mt-1">Business Management</p>
+            <p class="text-gray-500 text-sm">Nairobi, Kenya</p>
+        </div>
+        <div class="text-right">
+            <h2 class="text-3xl font-bold text-gray-800">INVOICE</h2>
+            <p class="text-gray-500 font-mono text-sm mt-1">#{{ invoice.invoice_number }}</p>
+            <div class="mt-2">
+                {% if invoice.status == 'paid' %}
+                <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold">✓ PAID</span>
+                {% elif invoice.status == 'partial' %}
+                <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm font-semibold">PARTIAL</span>
+                {% else %}
+                <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-semibold">UNPAID</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Divider -->
+    <div class="border-t-2 border-blue-600 mb-8"></div>
+
+    <!-- Bill To & Dates -->
+    <div class="grid grid-cols-2 gap-8 mb-8">
+        <div>
+            <p class="text-xs text-gray-400 uppercase font-semibold mb-2">Bill To</p>
+            <p class="font-bold text-gray-800 text-lg">{{ invoice.customer.name }}</p>
+            <p class="text-gray-600 text-sm">{{ invoice.customer.phone }}</p>
+            <p class="text-gray-600 text-sm">{{ invoice.customer.email|default:"" }}</p>
+            <p class="text-gray-600 text-sm">{{ invoice.customer.address|default:"" }}</p>
+            {% if invoice.customer.tax_number %}
+            <p class="text-gray-600 text-sm">KRA PIN: {{ invoice.customer.tax_number }}</p>
+            {% endif %}
+        </div>
+        <div class="text-right">
+            <p class="text-xs text-gray-400 uppercase font-semibold mb-2">Invoice Details</p>
+            <div class="space-y-1 text-sm">
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Issue Date:</span>
+                    <span class="text-gray-800 font-medium">{{ invoice.issue_date }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Due Date:</span>
+                    <span class="text-gray-800 font-medium">{{ invoice.due_date }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Prepared by:</span>
+                    <span class="text-gray-800 font-medium">{{ invoice.created_by.get_full_name|default:invoice.created_by.username }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Items Table -->
+    <table class="w-full text-sm mb-8">
+        <thead>
+            <tr class="bg-blue-600 text-white">
+                <th class="px-4 py-3 text-left rounded-tl-lg">#</th>
+                <th class="px-4 py-3 text-left">Product / Service</th>
+                <th class="px-4 py-3 text-right">Qty</th>
+                <th class="px-4 py-3 text-right">Unit Price</th>
+                <th class="px-4 py-3 text-right rounded-tr-lg">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in invoice.items.all %}
+            <tr class="{% if forloop.counter|divisibleby:2 %}bg-gray-50{% endif %}">
+                <td class="px-4 py-3 text-gray-500">{{ forloop.counter }}</td>
+                <td class="px-4 py-3 text-gray-800 font-medium">{{ item.product.name }}</td>
+                <td class="px-4 py-3 text-right text-gray-600">{{ item.quantity }}</td>
+                <td class="px-4 py-3 text-right text-gray-600">KES {{ item.unit_price }}</td>
+                <td class="px-4 py-3 text-right font-semibold text-gray-800">KES {{ item.total }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Totals -->
+    <div class="flex justify-end mb-8">
+        <div class="w-72">
+            <div class="flex justify-between py-2 text-sm border-b border-gray-100">
+                <span class="text-gray-500">Subtotal</span>
+                <span class="text-gray-800">KES {{ invoice.subtotal|floatformat:2 }}</span>
+            </div>
+            {% if invoice.discount %}
+            <div class="flex justify-between py-2 text-sm border-b border-gray-100">
+                <span class="text-gray-500">Discount</span>
+                <span class="text-red-600">- KES {{ invoice.discount|floatformat:2 }}</span>
+            </div>
+            {% endif %}
+            <div class="flex justify-between py-2 text-sm border-b border-gray-100">
+                <span class="text-gray-500">VAT ({{ invoice.tax_rate }}%)</span>
+                <span class="text-gray-800">KES {{ invoice.tax_amount|floatformat:2 }}</span>
+            </div>
+            <div class="flex justify-between py-3 font-bold text-lg border-t-2 border-blue-600 mt-1">
+                <span class="text-gray-800">TOTAL</span>
+                <span class="text-blue-600">KES {{ invoice.total|floatformat:2 }}</span>
+            </div>
+            <div class="flex justify-between py-2 text-sm text-green-600">
+                <span>Amount Paid</span>
+                <span>KES {{ invoice.amount_paid|floatformat:2 }}</span>
+            </div>
+            <div class="flex justify-between py-2 text-sm font-bold
+                {% if invoice.balance_due > 0 %}text-red-600{% else %}text-green-600{% endif %}">
+                <span>Balance Due</span>
+                <span>KES {{ invoice.balance_due|floatformat:2 }}</span>
+            </div>
+        </div>
+    </div>
+
+    {% if invoice.notes %}
+    <!-- Notes -->
+    <div class="bg-gray-50 rounded-lg p-4 mb-8">
+        <p class="text-xs text-gray-400 uppercase font-semibold mb-1">Notes</p>
+        <p class="text-gray-600 text-sm">{{ invoice.notes }}</p>
+    </div>
+    {% endif %}
+
+    <!-- Footer -->
+    <div class="border-t border-gray-200 pt-6 text-center">
+        <p class="text-gray-500 text-sm">Thank you for your business! 🙏</p>
+        <p class="text-gray-400 text-xs mt-1">For inquiries contact us at your email or phone number.</p>
+    </div>
+
+</div>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</body>
+</html>

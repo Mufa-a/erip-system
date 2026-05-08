@@ -1,0 +1,187 @@
+{% extends 'base.html' %}
+{% block title %}Reports{% endblock %}
+{% block page_title %}Reports & Analytics{% endblock %}
+
+{% block content %}
+
+<!-- Summary Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+    <div class="bg-white rounded-xl shadow p-6 flex items-center space-x-4">
+        <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+            <i class="fas fa-money-bill text-green-600 text-xl"></i>
+        </div>
+        <div>
+            <p class="text-sm text-gray-500">Total Revenue</p>
+            <p class="text-2xl font-bold text-gray-800">KES {{ total_revenue }}</p>
+        </div>
+    </div>
+    <div class="bg-white rounded-xl shadow p-6 flex items-center space-x-4">
+        <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+            <i class="fas fa-check-circle text-blue-600 text-xl"></i>
+        </div>
+        <div>
+            <p class="text-sm text-gray-500">Paid Invoices</p>
+            <p class="text-2xl font-bold text-gray-800">{{ paid_invoices }}</p>
+        </div>
+    </div>
+    <div class="bg-white rounded-xl shadow p-6 flex items-center space-x-4">
+        <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
+            <i class="fas fa-clock text-red-600 text-xl"></i>
+        </div>
+        <div>
+            <p class="text-sm text-gray-500">Unpaid Invoices</p>
+            <p class="text-2xl font-bold text-gray-800">{{ unpaid_invoices }}</p>
+        </div>
+    </div>
+    <div class="bg-white rounded-xl shadow p-6 flex items-center space-x-4">
+        <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+            <i class="fas fa-users text-purple-600 text-xl"></i>
+        </div>
+        <div>
+            <p class="text-sm text-gray-500">Total Customers</p>
+            <p class="text-2xl font-bold text-gray-800">{{ total_customers }}</p>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row 1 -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+
+    <!-- Monthly Revenue -->
+    <div class="bg-white rounded-xl shadow p-6">
+        <h3 class="text-lg font-semibold text-gray-700 mb-4">
+            <i class="fas fa-chart-bar text-blue-500 mr-2"></i>Monthly Revenue (KES)
+        </h3>
+        <canvas id="monthlyChart" height="120"></canvas>
+    </div>
+
+    <!-- Invoice Status -->
+    <div class="bg-white rounded-xl shadow p-6">
+        <h3 class="text-lg font-semibold text-gray-700 mb-4">
+            <i class="fas fa-chart-pie text-purple-500 mr-2"></i>Invoice Status
+        </h3>
+        <canvas id="statusChart" height="120"></canvas>
+    </div>
+
+</div>
+
+<!-- Charts Row 2 -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+    <!-- Daily Revenue -->
+    <div class="bg-white rounded-xl shadow p-6">
+        <h3 class="text-lg font-semibold text-gray-700 mb-4">
+            <i class="fas fa-chart-line text-green-500 mr-2"></i>Daily Revenue - Last 7 Days
+        </h3>
+        <canvas id="dailyChart" height="120"></canvas>
+    </div>
+
+    <!-- Top Products -->
+    <div class="bg-white rounded-xl shadow p-6">
+        <h3 class="text-lg font-semibold text-gray-700 mb-4">
+            <i class="fas fa-trophy text-yellow-500 mr-2"></i>Top 5 Products by Sales
+        </h3>
+        <canvas id="topProductsChart" height="120"></canvas>
+    </div>
+
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const monthlyLabels = {{ monthly_labels|safe }};
+const monthlyData   = {{ monthly_data|safe }};
+const statusLabels  = {{ status_labels|safe }};
+const statusCounts  = {{ status_counts|safe }};
+const topLabels     = {{ top_product_labels|safe }};
+const topData       = {{ top_product_data|safe }};
+const dailyLabels   = {{ daily_labels|safe }};
+const dailyData     = {{ daily_data|safe }};
+
+// Monthly Revenue Bar Chart
+new Chart(document.getElementById('monthlyChart'), {
+    type: 'bar',
+    data: {
+        labels: monthlyLabels.length ? monthlyLabels : ['No data'],
+        datasets: [{
+            label: 'Revenue (KES)',
+            data: monthlyData.length ? monthlyData : [0],
+            backgroundColor: 'rgba(59, 130, 246, 0.7)',
+            borderColor: 'rgba(59, 130, 246, 1)',
+            borderWidth: 1,
+            borderRadius: 6,
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true } }
+    }
+});
+
+// Invoice Status Pie Chart
+new Chart(document.getElementById('statusChart'), {
+    type: 'doughnut',
+    data: {
+        labels: statusLabels.length ? statusLabels : ['No data'],
+        datasets: [{
+            data: statusCounts.length ? statusCounts : [1],
+            backgroundColor: [
+                '#10b981', '#3b82f6', '#f59e0b',
+                '#ef4444', '#8b5cf6', '#6b7280'
+            ],
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { position: 'bottom' } }
+    }
+});
+
+// Daily Revenue Line Chart
+new Chart(document.getElementById('dailyChart'), {
+    type: 'line',
+    data: {
+        labels: dailyLabels.length ? dailyLabels : ['No data'],
+        datasets: [{
+            label: 'Revenue (KES)',
+            data: dailyData.length ? dailyData : [0],
+            borderColor: '#10b981',
+            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4,
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true } }
+    }
+});
+
+// Top Products Bar Chart
+new Chart(document.getElementById('topProductsChart'), {
+    type: 'bar',
+    data: {
+        labels: topLabels.length ? topLabels : ['No data'],
+        datasets: [{
+            label: 'Units Sold',
+            data: topData.length ? topData : [0],
+            backgroundColor: [
+                '#f59e0b', '#3b82f6', '#10b981',
+                '#8b5cf6', '#ef4444'
+            ],
+            borderRadius: 6,
+        }]
+    },
+    options: {
+        responsive: true,
+        indexAxis: 'y',
+        plugins: { legend: { display: false } },
+        scales: { x: { beginAtZero: true } }
+    }
+});
+</script>
+
+{% endblock %}

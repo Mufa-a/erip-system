@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Inventory{% endblock %}
+{% block page_title %}Inventory{% endblock %}
+{% block content %}
+<div class="bg-white rounded-xl shadow p-6">
+    <div class="flex items-center justify-between mb-6">
+        <h3 class="text-lg font-semibold text-gray-700">Stock Levels</h3>
+        <a href="{% url 'stock_movement' %}"
+            class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+            <i class="fas fa-exchange-alt"></i> Stock Movements
+        </a>
+    </div>
+    <table class="w-full text-sm">
+        <thead>
+            <tr class="bg-gray-50 text-gray-600 uppercase text-xs">
+                <th class="px-4 py-3 text-left">#</th>
+                <th class="px-4 py-3 text-left">Product</th>
+                <th class="px-4 py-3 text-left">SKU</th>
+                <th class="px-4 py-3 text-left">Category</th>
+                <th class="px-4 py-3 text-left">Stock</th>
+                <th class="px-4 py-3 text-left">Status</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+            {% for product in products %}
+            <tr class="hover:bg-gray-50">
+                <td class="px-4 py-3 text-gray-500">{{ forloop.counter }}</td>
+                <td class="px-4 py-3 font-medium text-gray-800">{{ product.name }}</td>
+                <td class="px-4 py-3 font-mono text-xs text-gray-500">{{ product.sku }}</td>
+                <td class="px-4 py-3 text-gray-600">{{ product.category|default:"-" }}</td>
+                <td class="px-4 py-3 font-bold text-gray-800">{{ product.stock }}</td>
+                <td class="px-4 py-3">
+                    {% if product.is_low_stock %}
+                    <span class="bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs">⚠ Low Stock</span>
+                    {% else %}
+                    <span class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs">✓ OK</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

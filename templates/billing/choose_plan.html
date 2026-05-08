@@ -1,0 +1,393 @@
+{% extends 'base.html' %}
+{% block title %}Choose Plan{% endblock %}
+{% block page_title %}Billing & Plans{% endblock %}
+
+{% block content %}
+
+<!-- Header -->
+<div class="text-center mb-10">
+    <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-2">Choose Your Plan</h2>
+    <p class="text-gray-500 dark:text-gray-400">Unlock modules based on your business needs</p>
+    {% if request.company.plan %}
+    <div class="inline-flex items-center space-x-2 mt-4 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 px-5 py-2 rounded-full">
+        <i class="fas fa-check-circle text-blue-500"></i>
+        <span class="text-sm text-blue-700 dark:text-blue-300">
+            Current plan: <strong>{{ request.company.plan|title }}</strong>
+            {% if request.company.plan_expires %}
+            — expires {{ request.company.plan_expires }}
+            {% endif %}
+        </span>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Plans -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto mb-12">
+
+    <!-- Starter -->
+    <div class="relative bg-white dark:bg-gray-800 rounded-2xl shadow-lg border-2
+        {% if request.company.plan == 'starter' %}border-blue-400{% else %}border-gray-200 dark:border-gray-700{% endif %}
+        p-8 flex flex-col hover:-translate-y-1 hover:shadow-xl transition duration-200">
+
+        {% if request.company.plan == 'starter' %}
+        <div class="absolute -top-3 left-1/2 -translate-x-1/2">
+            <span class="bg-blue-500 text-white text-xs font-bold px-4 py-1 rounded-full shadow">
+                ✓ CURRENT PLAN
+            </span>
+        </div>
+        {% endif %}
+
+        <div class="mb-5">
+            <div class="w-14 h-14 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mb-4">
+                <i class="fas fa-seedling text-gray-500 dark:text-gray-300 text-2xl"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-800 dark:text-white">Starter</h3>
+            <p class="text-gray-400 text-sm mt-1">For small businesses getting started</p>
+        </div>
+
+        <div class="mb-6">
+            <span class="text-4xl font-extrabold text-gray-800 dark:text-white">KES 2,000</span>
+            <span class="text-gray-400 text-sm">/month</span>
+        </div>
+
+        <ul class="space-y-3 mb-8 flex-1 text-sm">
+            <li class="flex items-center space-x-3">
+                <i class="fas fa-check-circle text-green-500 w-5"></i>
+                <span class="text-gray-700 dark:text-gray-300">2 Users</span>
+            </li>
+            <li class="flex items-center space-x-3">
+                <i class="fas fa-check-circle text-green-500 w-5"></i>
+                <span class="text-gray-700 dark:text-gray-300">Customers & Sales</span>
+            </li>
+            <li class="flex items-center space-x-3">
+                <i class="fas fa-check-circle text-green-500 w-5"></i>
+                <span class="text-gray-700 dark:text-gray-300">Products & Inventory</span>
+            </li>
+            <li class="flex items-center space-x-3">
+                <i class="fas fa-check-circle text-green-500 w-5"></i>
+                <span class="text-gray-700 dark:text-gray-300">Invoices & Payments</span>
+            </li>
+            <li class="flex items-center space-x-3">
+                <i class="fas fa-check-circle text-green-500 w-5"></i>
+                <span class="text-gray-700 dark:text-gray-300">Suppliers</span>
+            </li>
+            <li class="flex items-center space-x-3">
+                <i class="fas fa-times-circle text-gray-300 dark:text-gray-600 w-5"></i>
+                <span class="text-gray-400">HR & Payroll</span>
+            </li>
+            <li class="flex items-center space-x-3">
+                <i class="fas fa-times-circle text-gray-300 dark:text-gray-600 w-5"></i>
+                <span class="text-gray-400">Advanced Reports</span>
+            </li>
+            <li class="flex items-center space-x-3">
+                <i class="fas fa-times-circle text-gray-300 dark:text-gray-600 w-5"></i>
+                <span class="text-gray-400">M-Pesa Integration</span>
+            </li>
+        </ul>
+
+        <button onclick="openModal('starter', 2000)"
+            class="w-full py-3 rounded-xl font-semibold transition
+            {% if request.company.plan == 'starter' %}
+            bg-blue-50 dark:bg-blue-900/30 text-blue-600 border-2 border-blue-300
+            {% else %}
+            bg-gray-800 dark:bg-gray-600 text-white hover:bg-gray-700
+            {% endif %}">
+            {% if request.company.plan == 'starter' %}✓ Current Plan — Renew{% else %}Get Started{% endif %}
+        </button>
+    </div>
+
+    <!-- Business (Most Popular) -->
+    <div class="relative bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl shadow-2xl border-2 border-blue-500 p-8 flex flex-col hover:-translate-y-2 hover:shadow-blue-500/40 transition duration-200">
+
+        <div class="absolute -top-4 left-1/2 -translate-x-1/2">
+            <span class="bg-gradient-to-r from-yellow-400 to-orange-400 text-yellow-900 text-xs font-bold px-5 py-1.5 rounded-full shadow-lg">
+                ⭐ MOST POPULAR
+            </span>
+        </div>
+
+        {% if request.company.plan == 'business' %}
+        <div class="absolute -top-3 right-4">
+            <span class="bg-green-400 text-green-900 text-xs font-bold px-3 py-1 rounded-full">
+                ACTIVE
+            </span>
+        </div>
+        {% endif %}
+
+        <div class="mb-5">
+            <div class="w-14 h-14 bg-blue-500 rounded-2xl flex items-center justify-center mb-4">
+                <i class="fas fa-rocket text-white text-2xl"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-white">Business</h3>
+            <p class="text-blue-200 text-sm mt-1">For growing businesses</p>
+        </div>
+
+        <div class="mb-6">
+            <span class="text-4xl font-extrabold text-white">KES 5,000</span>
+            <span class="text-blue-200 text-sm">/month</span>
+        </div>
+
+        <ul class="space-y-3 mb-8 flex-1 text-sm">
+            <li class="flex items-center space-x-3">
+                <i class="fas fa-check-circle text-green-300 w-5"></i>
+                <span class="text-white">10 Users</span>
+            </li>
+            <li class="flex items-center space-x-3">
+                <i class="fas fa-check-circle text-green-300 w-5"></i>
+                <span class="text-white">All Starter Features</span>
+            </li>
+            <li class="flex items-center space-x-3">
+                <i class="fas fa-check-circle text-green-300 w-5"></i>
+                <span class="text-white">HR & Payroll</span>
+            </li>
+            <li class="flex items-center space-x-3">
+                <i class="fas fa-check-circle text-green-300 w-5"></i>
+                <span class="text-white">Advanced Reports & Charts</span>
+            </li>
+            <li class="flex items-center space-x-3">
+                <i class="fas fa-check-circle text-green-300 w-5"></i>
+                <span class="text-white">M-Pesa Integration</span>
+            </li>
+            <li class="flex items-center space-x-3">
+                <i class="fas fa-check-circle text-green-300 w-5"></i>
+                <span class="text-white">Email Notifications</span>
+            </li>
+            <li class="flex items-center space-x-3">
+                <i class="fas fa-check-circle text-green-300 w-5"></i>
+                <span class="text-white">SMS Notifications</span>
+            </li>
+            <li class="flex items-center space-x-3">
+                <i class="fas fa-times-circle text-blue-300 w-5"></i>
+                <span class="text-blue-200">Multi-Branch</span>
+            </li>
+        </ul>
+
+        <button onclick="openModal('business', 5000)"
+            class="w-full py-3 rounded-xl font-bold text-blue-600 bg-white hover:bg-blue-50 transition text-base">
+            {% if request.company.plan == 'business' %}✓ Current Plan — Renew{% else %}Upgrade to Business{% endif %}
+        </button>
+    </div>
+
+    <!-- Enterprise -->
+    <div class="relative bg-white dark:bg-gray-800 rounded-2xl shadow-lg border-2
+        {% if request.company.plan == 'enterprise' %}border-purple-500{% else %}border-gray-200 dark:border-gray-700{% endif %}
+        p-8 flex flex-col hover:-translate-y-1 hover:shadow-xl transition duration-200">
+
+        {% if request.company.plan == 'enterprise' %}
+        <div class="absolute -top-3 left-1/2 -translate-x-1/2">
+            <span class="bg-purple-500 text-white text-xs font-bold px-4 py-1 rounded-full shadow">
+                ✓ CURRENT PLAN
+            </span>
+        </div>
+        {% endif %}
+
+        <div class="mb-5">
+            <div class="w-14 h-14 bg-purple-100 dark:bg-purple-900/50 rounded-2xl flex items-center justify-center mb-4">
+                <i class="fas fa-crown text-purple-600 dark:text-purple-400 text-2xl"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-800 dark:text-white">Enterprise</h3>
+            <p class="text-gray-400 text-sm mt-1">For large organizations</p>
+        </div>
+
+        <div class="mb-6">
+            <span class="text-4xl font-extrabold text-gray-800 dark:text-white">KES 12,000</span>
+            <span class="text-gray-400 text-sm">/month</span>
+        </div>
+
+        <ul class="space-y-3 mb-8 flex-1 text-sm">
+            <li class="flex items-center space-x-3">
+                <i class="fas fa-check-circle text-green-500 w-5"></i>
+                <span class="text-gray-700 dark:text-gray-300">Unlimited Users</span>
+            </li>
+            <li class="flex items-center space-x-3">
+                <i class="fas fa-check-circle text-green-500 w-5"></i>
+                <span class="text-gray-700 dark:text-gray-300">All Business Features</span>
+            </li>
+            <li class="flex items-center space-x-3">
+                <i class="fas fa-check-circle text-green-500 w-5"></i>
+                <span class="text-gray-700 dark:text-gray-300">Multi-Branch Support</span>
+            </li>
+            <li class="flex items-center space-x-3">
+                <i class="fas fa-check-circle text-green-500 w-5"></i>
+                <span class="text-gray-700 dark:text-gray-300">Priority Support</span>
+            </li>
+            <li class="flex items-center space-x-3">
+                <i class="fas fa-check-circle text-green-500 w-5"></i>
+                <span class="text-gray-700 dark:text-gray-300">Custom Integrations</span>
+            </li>
+            <li class="flex items-center space-x-3">
+                <i class="fas fa-check-circle text-green-500 w-5"></i>
+                <span class="text-gray-700 dark:text-gray-300">Dedicated Account Manager</span>
+            </li>
+            <li class="flex items-center space-x-3">
+                <i class="fas fa-check-circle text-green-500 w-5"></i>
+                <span class="text-gray-700 dark:text-gray-300">API Access</span>
+            </li>
+            <li class="flex items-center space-x-3">
+                <i class="fas fa-check-circle text-green-500 w-5"></i>
+                <span class="text-gray-700 dark:text-gray-300">White Label Option</span>
+            </li>
+        </ul>
+
+        <button onclick="openModal('enterprise', 12000)"
+            class="w-full py-3 rounded-xl font-semibold transition
+            {% if request.company.plan == 'enterprise' %}
+            bg-purple-50 dark:bg-purple-900/30 text-purple-600 border-2 border-purple-300
+            {% else %}
+            bg-purple-600 text-white hover:bg-purple-700
+            {% endif %}">
+            {% if request.company.plan == 'enterprise' %}✓ Current Plan — Renew{% else %}Go Enterprise{% endif %}
+        </button>
+    </div>
+
+</div>
+
+<!-- Feature Comparison -->
+<div class="max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow p-8 mb-6">
+    <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-6 text-center">
+        <i class="fas fa-table text-blue-500 mr-2"></i>Full Feature Comparison
+    </h3>
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="border-b-2 border-gray-200 dark:border-gray-700">
+                    <th class="text-left py-3 px-4 text-gray-500 dark:text-gray-400 font-medium w-1/2">Feature</th>
+                    <th class="text-center py-3 px-4 text-gray-700 dark:text-gray-300 font-semibold">
+                        <i class="fas fa-seedling text-gray-500 mr-1"></i>Starter
+                    </th>
+                    <th class="text-center py-3 px-4 text-blue-600 font-bold">
+                        <i class="fas fa-rocket text-blue-500 mr-1"></i>Business
+                    </th>
+                    <th class="text-center py-3 px-4 text-purple-600 font-semibold">
+                        <i class="fas fa-crown text-purple-500 mr-1"></i>Enterprise
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                {% for feature, s, b, e in comparison %}
+                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/30">
+                    <td class="py-3 px-4 text-gray-700 dark:text-gray-300">{{ feature }}</td>
+                    <td class="py-3 px-4 text-center">
+                        {% if s == True %}<i class="fas fa-check text-green-500 text-base"></i>
+                        {% elif s == False %}<i class="fas fa-times text-gray-300 dark:text-gray-600 text-base"></i>
+                        {% else %}<span class="font-bold text-gray-700 dark:text-gray-300">{{ s }}</span>{% endif %}
+                    </td>
+                    <td class="py-3 px-4 text-center bg-blue-50/30 dark:bg-blue-900/10">
+                        {% if b == True %}<i class="fas fa-check text-green-500 text-base"></i>
+                        {% elif b == False %}<i class="fas fa-times text-gray-300 dark:text-gray-600 text-base"></i>
+                        {% else %}<span class="font-bold text-blue-600">{{ b }}</span>{% endif %}
+                    </td>
+                    <td class="py-3 px-4 text-center">
+                        {% if e == True %}<i class="fas fa-check text-green-500 text-base"></i>
+                        {% elif e == False %}<i class="fas fa-times text-gray-300 dark:text-gray-600 text-base"></i>
+                        {% else %}<span class="font-bold text-purple-600">{{ e }}</span>{% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Payment Modal -->
+<div id="payModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md p-8 mx-4">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="text-xl font-bold text-gray-800 dark:text-white" id="modalTitle">Subscribe</h3>
+            <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="plan" id="modalPlan">
+
+            <div class="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 mb-5">
+                <div class="flex justify-between text-sm text-gray-600 dark:text-gray-400 mb-1">
+                    <span>Plan</span>
+                    <span id="modalPlanName" class="font-semibold text-gray-800 dark:text-white"></span>
+                </div>
+                <div class="flex justify-between text-sm text-gray-600 dark:text-gray-400">
+                    <span>Price</span>
+                    <span id="modalPrice" class="font-semibold text-gray-800 dark:text-white"></span>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <i class="fas fa-calendar mr-1 text-blue-500"></i>Number of Months
+                </label>
+                <select name="months" id="modalMonths" onchange="updateTotal()"
+                    class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="1">1 Month</option>
+                    <option value="3">3 Months — Save 5%</option>
+                    <option value="6">6 Months — Save 10%</option>
+                    <option value="12">12 Months — Save 20%</option>
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <i class="fas fa-mobile-alt mr-1 text-green-500"></i>M-Pesa / Bank Reference
+                </label>
+                <input type="text" name="reference"
+                    class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="e.g. QA12BX34CD">
+            </div>
+
+            <!-- M-Pesa Paybill Info -->
+            <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4 mb-5">
+                <p class="text-xs font-semibold text-green-700 dark:text-green-400 mb-2">
+                    <i class="fas fa-mobile-alt mr-1"></i>Pay via M-Pesa Paybill
+                </p>
+                <div class="grid grid-cols-2 gap-2 text-xs text-green-600 dark:text-green-500">
+                    <div>Business No: <strong>522533</strong></div>
+                    <div>Account: <strong>{{ request.company.name|truncatechars:10 }}</strong></div>
+                </div>
+            </div>
+
+            <div class="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 mb-5">
+                <div class="flex justify-between items-center">
+                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Total Amount</span>
+                    <span id="modalTotal" class="text-xl font-bold text-blue-600 dark:text-blue-400">KES 0</span>
+                </div>
+            </div>
+
+            <button type="submit"
+                class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-base transition">
+                <i class="fas fa-lock mr-2"></i>Activate Plan
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+let currentPrice = 0;
+
+function openModal(plan, price) {
+    currentPrice = price;
+    document.getElementById('payModal').classList.remove('hidden');
+    document.getElementById('modalPlan').value = plan;
+    document.getElementById('modalPlanName').textContent = plan.charAt(0).toUpperCase() + plan.slice(1);
+    document.getElementById('modalPrice').textContent = 'KES ' + price.toLocaleString() + '/mo';
+    document.getElementById('modalTitle').textContent = 'Subscribe to ' + plan.charAt(0).toUpperCase() + plan.slice(1);
+    updateTotal();
+}
+
+function closeModal() {
+    document.getElementById('payModal').classList.add('hidden');
+}
+
+function updateTotal() {
+    const months = parseInt(document.getElementById('modalMonths').value);
+    const total  = currentPrice * months;
+    document.getElementById('modalTotal').textContent = 'KES ' + total.toLocaleString();
+}
+
+// Close on backdrop click
+document.getElementById('payModal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+});
+</script>
+
+{% endblock %}

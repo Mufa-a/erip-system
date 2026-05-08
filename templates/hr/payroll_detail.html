@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block title %}Payroll Detail{% endblock %}
+{% block page_title %}Payroll Detail{% endblock %}
+{% block content %}
+<div class="max-w-2xl mx-auto bg-white rounded-xl shadow p-6">
+    <div class="flex justify-between items-start mb-6">
+        <div>
+            <h3 class="text-lg font-bold text-gray-800">{{ payroll.employee.full_name }}</h3>
+            <p class="text-gray-500">{{ payroll.month|date:"F Y" }} Payroll</p>
+        </div>
+        <div class="flex space-x-2">
+            <a href="{% url 'payslip_print' payroll.pk %}" target="_blank"
+                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm">
+                <i class="fas fa-print mr-1"></i> Print Payslip
+            </a>
+        </div>
+    </div>
+
+    <!-- Earnings -->
+    <div class="bg-green-50 rounded-xl p-4 mb-4">
+        <h4 class="font-semibold text-green-700 mb-3">Earnings</h4>
+        <div class="space-y-2 text-sm">
+            <div class="flex justify-between">
+                <span class="text-gray-600">Basic Salary</span>
+                <span class="font-medium">KES {{ payroll.basic_salary|floatformat:2 }}</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-600">Allowances</span>
+                <span class="font-medium">KES {{ payroll.allowances|floatformat:2 }}</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-600">Overtime</span>
+                <span class="font-medium">KES {{ payroll.overtime|floatformat:2 }}</span>
+            </div>
+            <div class="flex justify-between border-t pt-2 font-bold">
+                <span>Gross Salary</span>
+                <span class="text-green-700">KES {{ payroll.gross_salary|floatformat:2 }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Deductions -->
+    <div class="bg-red-50 rounded-xl p-4 mb-4">
+        <h4 class="font-semibold text-red-700 mb-3">Deductions</h4>
+        <div class="space-y-2 text-sm">
+            <div class="flex justify-between">
+                <span class="text-gray-600">PAYE Tax</span>
+                <span class="font-medium">KES {{ payroll.paye|floatformat:2 }}</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-600">NSSF</span>
+                <span class="font-medium">KES {{ payroll.nssf|floatformat:2 }}</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-600">NHIF</span>
+                <span class="font-medium">KES {{ payroll.nhif|floatformat:2 }}</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-600">Other Deductions</span>
+                <span class="font-medium">KES {{ payroll.other_deductions|floatformat:2 }}</span>
+            </div>
+            <div class="flex justify-between border-t pt-2 font-bold">
+                <span>Total Deductions</span>
+                <span class="text-red-700">KES {{ payroll.total_deductions|floatformat:2 }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Net Pay -->
+    <div class="bg-blue-600 rounded-xl p-4 mb-6 text-white text-center">
+        <p class="text-sm opacity-80">Net Pay</p>
+        <p class="text-3xl font-bold">KES {{ payroll.net_salary|floatformat:2 }}</p>
+    </div>
+
+    <!-- Update Status -->
+    <form method="POST" class="flex space-x-3">
+        {% csrf_token %}
+        <select name="status"
+            class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="draft" {% if payroll.status == 'draft' %}selected{% endif %}>Draft</option>
+            <option value="approved" {% if payroll.status == 'approved' %}selected{% endif %}>Approved</option>
+            <option value="paid" {% if payroll.status == 'paid' %}selected{% endif %}>Paid</option>
+        </select>
+        <button type="submit"
+            class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">
+            Update Status
+        </button>
+        <a href="{% url 'payroll_list' %}"
+            class="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-300 transition">
+            Back
+        </a>
+    </form>
+</div>
+{% endblock %}

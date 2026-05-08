@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block title %}Employees{% endblock %}
+{% block page_title %}HR - Employees{% endblock %}
+{% block content %}
+<div class="bg-white rounded-xl shadow p-6">
+    <div class="flex items-center justify-between mb-6">
+        <h3 class="text-lg font-semibold text-gray-700">All Employees</h3>
+        <div class="flex space-x-2">
+            <a href="{% url 'payroll_list' %}"
+                class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
+                <i class="fas fa-money-check-alt"></i> Payroll
+            </a>
+            <a href="{% url 'employee_add' %}"
+                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                <i class="fas fa-plus"></i> Add Employee
+            </a>
+        </div>
+    </div>
+    {% if employees %}
+    <table class="w-full text-sm">
+        <thead>
+            <tr class="bg-gray-50 text-gray-600 uppercase text-xs">
+                <th class="px-4 py-3 text-left">Emp #</th>
+                <th class="px-4 py-3 text-left">Name</th>
+                <th class="px-4 py-3 text-left">Department</th>
+                <th class="px-4 py-3 text-left">Type</th>
+                <th class="px-4 py-3 text-left">Basic Salary</th>
+                <th class="px-4 py-3 text-left">Status</th>
+                <th class="px-4 py-3 text-left">Actions</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+            {% for emp in employees %}
+            <tr class="hover:bg-gray-50">
+                <td class="px-4 py-3 font-mono text-xs text-blue-600">{{ emp.employee_number }}</td>
+                <td class="px-4 py-3 font-medium text-gray-800">{{ emp.full_name }}</td>
+                <td class="px-4 py-3 text-gray-600">{{ emp.get_department_display }}</td>
+                <td class="px-4 py-3 text-gray-600">{{ emp.get_employment_type_display }}</td>
+                <td class="px-4 py-3 font-medium text-gray-800">KES {{ emp.basic_salary }}</td>
+                <td class="px-4 py-3">
+                    {% if emp.is_active %}
+                    <span class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs">Active</span>
+                    {% else %}
+                    <span class="bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs">Inactive</span>
+                    {% endif %}
+                </td>
+                <td class="px-4 py-3">
+                    <div class="flex space-x-2">
+                        <a href="{% url 'employee_edit' emp.pk %}"
+                            class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-lg text-xs">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <a href="{% url 'employee_delete' emp.pk %}"
+                            class="bg-red-100 text-red-700 px-3 py-1 rounded-lg text-xs">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="text-center py-12 text-gray-400">
+        <i class="fas fa-users text-4xl mb-3"></i>
+        <p>No employees yet.</p>
+        <a href="{% url 'employee_add' %}" class="text-blue-500 hover:underline mt-2 inline-block">
+            Add your first employee
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
