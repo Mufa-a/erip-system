@@ -1,4 +1,3 @@
-CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', default='').split(',')
 from pathlib import Path
 from decouple import config
 import sentry_sdk
@@ -9,7 +8,7 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-me-in-producti
 DEBUG      = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='*').split(',')
-CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', default='').split(',')
+CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', default='https://erip-system-4.onrender.com').split(',')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -18,9 +17,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # Security
     'axes',
-    # Our ERP apps
     'accounts',
     'core',
     'customers',
@@ -109,7 +106,7 @@ LOGIN_REDIRECT_URL  = '/dashboard/'
 LOGOUT_REDIRECT_URL = '/accounts/login/'
 
 # ============================================================
-# 📝 MESSAGE TAGS
+# MESSAGE TAGS
 # ============================================================
 from django.contrib.messages import constants as messages
 MESSAGE_TAGS = {
@@ -120,7 +117,7 @@ MESSAGE_TAGS = {
 }
 
 # ============================================================
-# 🔒 SECURITY SETTINGS
+# SECURITY SETTINGS
 # ============================================================
 SECURE_BROWSER_XSS_FILTER    = True
 SECURE_CONTENT_TYPE_NOSNIFF  = True
@@ -136,12 +133,12 @@ if not DEBUG:
     CSRF_COOKIE_SECURE             = True
 
 SESSION_COOKIE_HTTPONLY         = True
-SESSION_COOKIE_AGE              = 28800  # 8 hours
+SESSION_COOKIE_AGE              = 28800
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 CSRF_COOKIE_HTTPONLY            = True
 
 # ============================================================
-# 🚫 RATE LIMITING — django-axes
+# RATE LIMITING — django-axes
 # ============================================================
 AXES_FAILURE_LIMIT      = 5
 AXES_COOLOFF_TIME       = 1
@@ -156,7 +153,7 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 # ============================================================
-# 📧 EMAIL
+# EMAIL
 # ============================================================
 EMAIL_BACKEND       = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST          = config('EMAIL_HOST',          default='smtp.gmail.com')
@@ -167,7 +164,7 @@ EMAIL_USE_TLS       = config('EMAIL_USE_TLS',       default=True, cast=bool)
 DEFAULT_FROM_EMAIL  = config('EMAIL_HOST_USER',     default='noreply@erip.com')
 
 # ============================================================
-# 📱 M-PESA
+# M-PESA
 # ============================================================
 MPESA_CONSUMER_KEY    = config('MPESA_CONSUMER_KEY',    default='')
 MPESA_CONSUMER_SECRET = config('MPESA_CONSUMER_SECRET', default='')
@@ -177,13 +174,13 @@ MPESA_CALLBACK_URL    = config('MPESA_CALLBACK_URL',    default='')
 MPESA_ENV             = config('MPESA_ENV',             default='sandbox')
 
 # ============================================================
-# 📱 AFRICA'S TALKING SMS
+# AFRICA'S TALKING SMS
 # ============================================================
 AT_USERNAME = config('AT_USERNAME', default='sandbox')
 AT_API_KEY  = config('AT_API_KEY',  default='')
 
 # ============================================================
-# 📊 ERROR TRACKING — Sentry
+# ERROR TRACKING — Sentry
 # ============================================================
 SENTRY_DSN = config('SENTRY_DSN', default='')
 if SENTRY_DSN:
@@ -194,38 +191,18 @@ if SENTRY_DSN:
     )
 
 # ============================================================
-# 📝 LOGGING
+# LOGGING — console only (no file logging on Render)
 # ============================================================
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
-        'verbose': {
-            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
-            'style': '{',
-        },
         'simple': {
             'format': '{levelname} {asctime} {message}',
             'style': '{',
         },
     },
     'handlers': {
-        'file': {
-            'level': 'WARNING',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': BASE_DIR / 'logs/erp.log',
-            'maxBytes': 1024 * 1024 * 5,  # 5MB
-            'backupCount': 5,
-            'formatter': 'verbose',
-        },
-        'security_file': {
-            'level': 'WARNING',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': BASE_DIR / 'logs/security.log',
-            'maxBytes': 1024 * 1024 * 5,
-            'backupCount': 5,
-            'formatter': 'verbose',
-        },
         'console': {
             'level': 'INFO',
             'class': 'logging.StreamHandler',
@@ -234,17 +211,12 @@ LOGGING = {
     },
     'loggers': {
         'django': {
-            'handlers': ['file', 'console'],
+            'handlers': ['console'],
             'level': 'WARNING',
             'propagate': True,
         },
-        'django.security': {
-            'handlers': ['security_file'],
-            'level': 'WARNING',
-            'propagate': False,
-        },
         'erp': {
-            'handlers': ['file', 'console'],
+            'handlers': ['console'],
             'level': 'INFO',
             'propagate': False,
         },
