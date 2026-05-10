@@ -2,71 +2,136 @@
 {% block title %}Payroll{% endblock %}
 {% block page_title %}Payroll{% endblock %}
 {% block content %}
-<div class="bg-white rounded-xl shadow p-6">
-    <div class="flex items-center justify-between mb-6">
-        <h3 class="text-lg font-semibold text-gray-700">Payroll Records</h3>
-        <div class="flex space-x-2">
+<div class="rounded-xl shadow p-4 md:p-6" style="background:var(--card-bg, #fff); border:1px solid var(--card-border, #e5e7eb);">
+
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+        <h3 class="text-lg font-semibold" style="color:var(--text-main, #374151);">Payroll Records</h3>
+        <div class="flex flex-col sm:flex-row gap-2">
             <a href="{% url 'employee_list' %}"
-                class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition">
+                class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition text-center">
                 <i class="fas fa-users"></i> Employees
             </a>
             <a href="{% url 'payroll_generate' %}"
-                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-center">
                 <i class="fas fa-plus"></i> Generate Payroll
             </a>
         </div>
     </div>
+
     {% if payrolls %}
-    <table class="w-full text-sm">
-        <thead>
-            <tr class="bg-gray-50 text-gray-600 uppercase text-xs">
-                <th class="px-4 py-3 text-left">Employee</th>
-                <th class="px-4 py-3 text-left">Month</th>
-                <th class="px-4 py-3 text-left">Gross</th>
-                <th class="px-4 py-3 text-left">Deductions</th>
-                <th class="px-4 py-3 text-left">Net Pay</th>
-                <th class="px-4 py-3 text-left">Status</th>
-                <th class="px-4 py-3 text-left">Actions</th>
-            </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-100">
-            {% for p in payrolls %}
-            <tr class="hover:bg-gray-50">
-                <td class="px-4 py-3 font-medium text-gray-800">{{ p.employee.full_name }}</td>
-                <td class="px-4 py-3 text-gray-600">{{ p.month|date:"F Y" }}</td>
-                <td class="px-4 py-3 text-gray-800">KES {{ p.gross_salary|floatformat:2 }}</td>
-                <td class="px-4 py-3 text-red-600">KES {{ p.total_deductions|floatformat:2 }}</td>
-                <td class="px-4 py-3 font-bold text-green-700">KES {{ p.net_salary|floatformat:2 }}</td>
-                <td class="px-4 py-3">
-                    {% if p.status == 'paid' %}
-                    <span class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs">Paid</span>
-                    {% elif p.status == 'approved' %}
-                    <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs">Approved</span>
-                    {% else %}
-                    <span class="bg-gray-100 text-gray-700 px-2 py-1 rounded-full text-xs">Draft</span>
-                    {% endif %}
-                </td>
-                <td class="px-4 py-3">
-                    <div class="flex space-x-2">
-                        <a href="{% url 'payroll_detail' p.pk %}"
-                            class="bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-xs">
-                            <i class="fas fa-eye"></i> View
-                        </a>
-                        <a href="{% url 'payslip_print' p.pk %}"
-                            class="bg-gray-100 text-gray-700 px-3 py-1 rounded-lg text-xs" target="_blank">
-                            <i class="fas fa-print"></i>
-                        </a>
-                    </div>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+
+    <!-- DESKTOP: Normal table -->
+    <div class="hidden md:block overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="text-xs uppercase" style="background:var(--table-head-bg, #f9fafb); color:var(--text-muted, #6b7280);">
+                    <th class="px-4 py-3 text-left">Employee</th>
+                    <th class="px-4 py-3 text-left">Month</th>
+                    <th class="px-4 py-3 text-left">Gross</th>
+                    <th class="px-4 py-3 text-left">Deductions</th>
+                    <th class="px-4 py-3 text-left">Net Pay</th>
+                    <th class="px-4 py-3 text-left">Status</th>
+                    <th class="px-4 py-3 text-left">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y" style="border-color:var(--card-border, #f3f4f6);">
+                {% for p in payrolls %}
+                <tr class="hover:opacity-80 transition">
+                    <td class="px-4 py-3 font-medium" style="color:var(--text-main, #1f2937);">{{ p.employee.full_name }}</td>
+                    <td class="px-4 py-3" style="color:var(--text-main, #4b5563);">{{ p.month|date:"F Y" }}</td>
+                    <td class="px-4 py-3" style="color:var(--text-main, #1f2937);">KES {{ p.gross_salary|floatformat:2 }}</td>
+                    <td class="px-4 py-3 text-red-600">KES {{ p.total_deductions|floatformat:2 }}</td>
+                    <td class="px-4 py-3 font-bold text-green-700">KES {{ p.net_salary|floatformat:2 }}</td>
+                    <td class="px-4 py-3">
+                        {% if p.status == 'paid' %}
+                        <span class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs">Paid</span>
+                        {% elif p.status == 'approved' %}
+                        <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs">Approved</span>
+                        {% else %}
+                        <span class="bg-gray-100 text-gray-700 px-2 py-1 rounded-full text-xs">Draft</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-4 py-3">
+                        <div class="flex space-x-2">
+                            <a href="{% url 'payroll_detail' p.pk %}"
+                                class="bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-xs hover:bg-blue-200">
+                                <i class="fas fa-eye"></i> View
+                            </a>
+                            <a href="{% url 'payslip_print' p.pk %}"
+                                class="bg-gray-100 text-gray-700 px-3 py-1 rounded-lg text-xs hover:bg-gray-200" target="_blank">
+                                <i class="fas fa-print"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- MOBILE: Card layout -->
+    <div class="md:hidden flex flex-col gap-3">
+        {% for p in payrolls %}
+        <div class="rounded-lg p-4" style="background:var(--card-bg, #fff); border:1px solid var(--card-border, #e5e7eb);">
+
+            <!-- Top: Employee name + Status -->
+            <div class="flex items-start justify-between mb-3">
+                <div>
+                    <p class="font-semibold text-sm" style="color:var(--text-main, #1f2937);">{{ p.employee.full_name }}</p>
+                    <p class="text-xs mt-0.5" style="color:var(--text-muted, #9ca3af);">{{ p.month|date:"F Y" }}</p>
+                </div>
+                {% if p.status == 'paid' %}
+                <span class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs">Paid</span>
+                {% elif p.status == 'approved' %}
+                <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs">Approved</span>
+                {% else %}
+                <span class="bg-gray-100 text-gray-700 px-2 py-1 rounded-full text-xs">Draft</span>
+                {% endif %}
+            </div>
+
+            <!-- Pay breakdown -->
+            <div class="grid grid-cols-3 gap-2 text-xs mb-3 p-3 rounded-lg" style="background:var(--table-head-bg, #f9fafb);">
+                <div>
+                    <p style="color:var(--text-muted, #9ca3af);">Gross</p>
+                    <p class="font-semibold mt-0.5" style="color:var(--text-main, #1f2937);">KES {{ p.gross_salary|floatformat:2 }}</p>
+                </div>
+                <div>
+                    <p style="color:var(--text-muted, #9ca3af);">Deductions</p>
+                    <p class="font-semibold mt-0.5 text-red-600">KES {{ p.total_deductions|floatformat:2 }}</p>
+                </div>
+                <div>
+                    <p style="color:var(--text-muted, #9ca3af);">Net Pay</p>
+                    <p class="font-bold mt-0.5 text-green-700">KES {{ p.net_salary|floatformat:2 }}</p>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex gap-2 pt-2" style="border-top:1px solid var(--card-border, #e5e7eb);">
+                <a href="{% url 'payroll_detail' p.pk %}"
+                    class="flex-1 bg-blue-100 text-blue-700 px-3 py-2 rounded-lg text-xs hover:bg-blue-200 text-center">
+                    <i class="fas fa-eye"></i> View Details
+                </a>
+                <a href="{% url 'payslip_print' p.pk %}"
+                    class="bg-gray-100 text-gray-700 px-3 py-2 rounded-lg text-xs hover:bg-gray-200 text-center" target="_blank">
+                    <i class="fas fa-print"></i> Print
+                </a>
+            </div>
+
+        </div>
+        {% endfor %}
+    </div>
+
     {% else %}
-    <div class="text-center py-12 text-gray-400">
+    <!-- Empty state -->
+    <div class="text-center py-12" style="color:var(--text-muted, #9ca3af);">
         <i class="fas fa-money-check-alt text-4xl mb-3"></i>
         <p>No payroll records yet.</p>
+        <a href="{% url 'payroll_generate' %}" class="mt-3 inline-block bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm">
+            <i class="fas fa-plus"></i> Generate First Payroll
+        </a>
     </div>
     {% endif %}
+
 </div>
 {% endblock %}
