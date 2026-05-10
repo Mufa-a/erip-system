@@ -1,0 +1,8 @@
+WARNING 2026-05-09 11:51:27,017 log 18568 9476 Forbidden (CSRF token from POST incorrect.): /accounts/login/
+WARNING 2026-05-09 11:52:06,285 log 18568 9476 Forbidden (CSRF token from POST incorrect.): /accounts/login/
+WARNING 2026-05-09 11:56:14,252 log 25604 19824 Forbidden (CSRF token from POST incorrect.): /accounts/login/
+WARNING 2026-05-09 12:02:40,342 log 18976 10816 Forbidden (CSRF token from POST incorrect.): /accounts/login/
+WARNING 2026-05-09 12:09:10,302 log 25464 18192 Forbidden (CSRF token from POST incorrect.): /
+WARNING 2026-05-09 13:32:10,838 log 25780 9112 Forbidden (CSRF token from POST incorrect.): /accounts/login/
+WARNING 2026-05-09 13:32:16,178 log 25780 9112 Forbidden (CSRF token from POST incorrect.): /accounts/login/
+WARNING 2026-05-09 14:48:11,817 log 19272 19952 Forbidden (CSRF token from POST incorrect.): /billing/plans/

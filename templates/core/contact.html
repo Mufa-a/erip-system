@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contact Us — ERIP System</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --blue: #2563eb; --blue-light: #eff6ff; --green: #16a34a;
+      --red: #dc2626; --red-light: #fef2f2;
+      --border: #e5e7eb; --text: #111827; --muted: #6b7280;
+      --radius: 10px; --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+    body { font-family: var(--font); background: #f3f4f6; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1.5rem; }
+    .card { background: #fff; border-radius: 16px; padding: 2rem; width: 100%; max-width: 440px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+    .logo { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 600; margin-bottom: 1.5rem; text-decoration: none; color: var(--text); }
+    .logo-icon { width: 32px; height: 32px; background: var(--blue-light); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--blue); }
+    h1 { font-size: 20px; font-weight: 600; margin-bottom: .25rem; }
+    .subtitle { font-size: 13px; color: var(--muted); margin-bottom: 1.5rem; }
+    .messages { margin-bottom: 1rem; }
+    .msg { font-size: 13px; padding: 10px 12px; border-radius: var(--radius); margin-bottom: 6px; }
+    .msg.error { background: var(--red-light); color: var(--red); border: 1px solid #fecaca; }
+    .msg.success { background: #f0fdf4; color: var(--green); border: 1px solid #bbf7d0; }
+    .plan-badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 10px; border-radius: 20px; background: var(--blue-light); color: var(--blue); margin-bottom: 1rem; }
+    .field { margin-bottom: 14px; }
+    label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 5px; }
+    input, textarea {
+      width: 100%; padding: 9px 12px; border: 1px solid var(--border);
+      border-radius: var(--radius); font-size: 14px; font-family: var(--font);
+      outline: none; transition: border .15s; resize: vertical;
+    }
+    input:focus, textarea:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
+    .btn { width: 100%; padding: 11px; background: var(--blue); color: #fff; border: none; border-radius: var(--radius); font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 6px; }
+    .btn:hover { opacity: .88; }
+    .footer-text { text-align: center; font-size: 13px; color: var(--muted); margin-top: 1rem; }
+    .footer-text a { color: var(--blue); text-decoration: none; }
+  </style>
+</head>
+<body>
+<div class="card">
+  <a href="/" class="logo">
+    <div class="logo-icon"><i class="ti ti-bolt"></i></div>
+    ERIP System
+  </a>
+
+  <h1>Talk to us</h1>
+  <p class="subtitle">We'll get back to you within 24 hours.</p>
+
+  {% if plan %}
+    <div class="plan-badge"><i class="ti ti-crown"></i> Enquiring about: {{ plan|title }} plan</div>
+  {% endif %}
+
+  {% if messages %}
+    <div class="messages">
+      {% for msg in messages %}
+        <div class="msg {{ msg.tags }}">{{ msg }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <form method="POST">
+    {% csrf_token %}
+    <input type="hidden" name="plan" value="{{ plan }}">
+
+    <div class="field">
+      <label for="name">Your name</label>
+      <input type="text" id="name" name="name" placeholder="John Kamau" required/>
+    </div>
+    <div class="field">
+      <label for="email">Email address</label>
+      <input type="email" id="email" name="email" placeholder="john@business.co.ke" required/>
+    </div>
+    <div class="field">
+      <label for="message">Message</label>
+      <textarea id="message" name="message" rows="4" placeholder="Tell us about your business and what you need..." required></textarea>
+    </div>
+
+    <button type="submit" class="btn">Send message</button>
+  </form>
+
+  <p class="footer-text"><a href="/">← Back to home</a></p>
+</div>
+</body>
+</html>

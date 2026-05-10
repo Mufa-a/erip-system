@@ -2,7 +2,6 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
-from datetime import date
 from dateutil.relativedelta import relativedelta
 from company.models import Company, SubscriptionPayment, CompanySettings
 
@@ -33,8 +32,8 @@ def billing_dashboard(request):
 @login_required
 def choose_plan(request):
     if request.method == 'POST':
-        plan     = request.POST.get('plan')
-        months   = int(request.POST.get('months', 1))
+        plan      = request.POST.get('plan')
+        months    = int(request.POST.get('months', 1))
         reference = request.POST.get('reference', '')
 
         if plan not in PLAN_PRICES:
@@ -59,8 +58,8 @@ def choose_plan(request):
         company.plan      = plan
         company.max_users = PLAN_MAX_USERS[plan]
 
-        # Extend expiry from today or from current expiry (whichever is later)
-        base = max(date.today(), company.plan_expires or date.today())
+        # ✅ FIXED - Extend expiry using datetime not date
+        base = max(timezone.now(), company.plan_expires or timezone.now())
         company.plan_expires = base + relativedelta(months=months)
         company.save()
 
@@ -99,23 +98,24 @@ def choose_plan(request):
         ('Max Users',            '2',   '10',  '∞'),
     ]
     return render(request, 'billing/choose_plan.html', {
-        'prices': PLAN_PRICES,
+        'prices':     PLAN_PRICES,
         'comparison': comparison,
     })
-    from django.utils import timezone
+
 
 @login_required
 def superadmin_dashboard(request):
     if not request.user.is_superuser and not request.user.is_admin:
         return redirect('dashboard')
 
-    today     = timezone.now().date()
+    # ✅ FIXED - use timezone.now() instead of date.today()
+    now       = timezone.now()
     companies = Company.objects.all().prefetch_related('subscription_payments')
     payments  = SubscriptionPayment.objects.select_related('company').order_by('-created_at')
 
     total_revenue = sum(p.amount for p in payments if p.status == 'paid')
-    expiring_soon = [c for c in companies if c.plan_expires and 0 <= (c.plan_expires - today).days <= 7]
-    expired       = [c for c in companies if c.plan_expires and c.plan_expires < today]
+    expiring_soon = [c for c in companies if c.plan_expires and 0 <= (c.plan_expires - now).days <= 7]
+    expired       = [c for c in companies if c.plan_expires and c.plan_expires < now]
 
     return render(request, 'billing/superadmin.html', {
         'companies':       companies,
@@ -124,5 +124,5 @@ def superadmin_dashboard(request):
         'total_companies': companies.count(),
         'expiring_soon':   expiring_soon,
         'expired':         expired,
-        'today':           today,
+        'today':           now,
     })

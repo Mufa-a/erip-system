@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Locked</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 min-h-screen flex items-center justify-center">
+    <div class="bg-white rounded-2xl shadow-2xl p-10 max-w-md w-full text-center">
+        <div class="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <i class="fas fa-lock text-red-600 text-3xl"></i>
+        </div>
+        <h1 class="text-2xl font-bold text-gray-800 mb-2">Account Temporarily Locked</h1>
+        <p class="text-gray-500 mb-6">
+            Too many failed login attempts. Your account has been locked for <strong>1 hour</strong> for security reasons.
+        </p>
+        <div class="bg-red-50 border border-red-200 rounded-xl p-4 mb-6 text-left text-sm text-red-700">
+            <p class="font-semibold mb-1">Why was I locked out?</p>
+            <p>5 or more failed login attempts were detected from your IP address or username. This protects your account from unauthorized access.</p>
+        </div>
+        <p class="text-sm text-gray-400">
+            Please wait 1 hour and try again, or contact your system administrator.
+        </p>
+        <a href="/accounts/login/" class="inline-block mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition text-sm">
+            Try Again
+        </a>
+    </div>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</body>
+</html>

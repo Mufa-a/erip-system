@@ -6,20 +6,17 @@ from .models import Customer
 
 @login_required
 def customer_list(request):
-    search    = request.GET.get('search', '')
-    customers = Customer.objects.filter(
-        company=request.company          # ✅ filter by company
-    ).order_by('-created_at')
-
+    if not request.company:
+        messages.error(request, 'You are not assigned to a company. Contact your administrator.')
+        return redirect('dashboard')
+    
+    search = request.GET.get('search', '')
+    customers = Customer.objects.filter(company=request.company).order_by('-created_at')
     if search:
-        customers = customers.filter(name__icontains=search)  | \
+        customers = customers.filter(name__icontains=search) | \
                     customers.filter(phone__icontains=search) | \
                     customers.filter(email__icontains=search)
-
-    return render(request, 'customers/customer_list.html', {
-        'customers': customers,
-        'search': search
-    })
+    return render(request, 'customers/customer_list.html', {'customers': customers, 'search': search})
 
 
 @login_required

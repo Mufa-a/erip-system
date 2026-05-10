@@ -1,0 +1,95 @@
+WARNING 2026-05-09 10:59:48,628 log 26040 14628 Not Found: /favicon.ico
+WARNING 2026-05-09 10:59:48,633 log 26040 14628 "GET /favicon.ico HTTP/1.1" 404 6061
+WARNING 2026-05-09 11:20:24,918 log 13948 26872 Not Found: /
+WARNING 2026-05-09 11:20:24,919 log 13948 26872 "GET / HTTP/1.1" 404 6010
+WARNING 2026-05-09 11:20:25,089 log 13948 26872 Not Found: /favicon.ico
+WARNING 2026-05-09 11:20:25,096 log 13948 26872 "GET /favicon.ico HTTP/1.1" 404 6061
+WARNING 2026-05-09 11:20:40,500 log 13948 26872 Not Found: /accounts/register/
+WARNING 2026-05-09 11:20:40,508 log 13948 26872 "GET /accounts/register/ HTTP/1.1" 404 7843
+WARNING 2026-05-09 11:29:51,502 log 26584 27552 Not Found: /
+WARNING 2026-05-09 11:29:51,509 log 26584 27552 "GET / HTTP/1.1" 404 6269
+WARNING 2026-05-09 11:30:15,881 log 26584 27552 Not Found: /accounts/
+WARNING 2026-05-09 11:30:15,891 log 26584 27552 "GET /accounts/ HTTP/1.1" 404 8343
+WARNING 2026-05-09 11:31:04,962 log 26584 27552 Not Found: /
+WARNING 2026-05-09 11:31:04,966 log 26584 27552 "GET / HTTP/1.1" 404 6269
+WARNING 2026-05-09 11:33:47,665 log 5588 20628 Not Found: /accounts/
+WARNING 2026-05-09 11:33:47,667 log 5588 20628 "GET /accounts/ HTTP/1.1" 404 8521
+WARNING 2026-05-09 11:33:48,965 log 5588 20628 Not Found: /accounts/
+WARNING 2026-05-09 11:33:48,966 log 5588 20628 "GET /accounts/ HTTP/1.1" 404 8521
+WARNING 2026-05-09 11:33:51,646 log 5588 20628 Not Found: /
+WARNING 2026-05-09 11:33:51,647 log 5588 20628 "GET / HTTP/1.1" 404 6447
+WARNING 2026-05-09 11:35:18,061 log 2756 26040 Not Found: /
+WARNING 2026-05-09 11:35:18,062 log 2756 26040 "GET / HTTP/1.1" 404 6447
+WARNING 2026-05-09 11:35:20,766 log 2756 26040 Not Found: /accounts/
+WARNING 2026-05-09 11:35:20,771 log 2756 26040 "GET /accounts/ HTTP/1.1" 404 8521
+WARNING 2026-05-09 11:38:31,210 log 25160 24868 Not Found: /accounts/
+WARNING 2026-05-09 11:38:31,216 log 25160 24868 "GET /accounts/ HTTP/1.1" 404 6390
+WARNING 2026-05-09 11:38:32,340 log 25160 24868 Not Found: /accounts/
+WARNING 2026-05-09 11:38:32,343 log 25160 24868 "GET /accounts/ HTTP/1.1" 404 6390
+ERROR 2026-05-09 11:39:46,068 log 25160 24868 Internal Server Error: /accounts/register/
+Traceback (most recent call last):
+  File "C:\Users\Administrator\erp_project\venv\Lib\site-packages\django\contrib\auth\__init__.py", line 57, in _get_backend_from_user
+    backend = backend or user.backend
+                         ^^^^^^^^^^^^
+AttributeError: 'User' object has no attribute 'backend'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Administrator\erp_project\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\Administrator\erp_project\venv\Lib\site-packages\django\core\handlers\base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Administrator\erp_project\accounts\views.py", line 61, in register
+    login(request, user)
+    ~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\Administrator\erp_project\venv\Lib\site-packages\django\contrib\auth\__init__.py", line 189, in login
+    backend = _get_backend_from_user(user=user, backend=backend)
+  File "C:\Users\Administrator\erp_project\venv\Lib\site-packages\django\contrib\auth\__init__.py", line 63, in _get_backend_from_user
+    raise ValueError(
+    ...<3 lines>...
+    )
+ValueError: You have multiple authentication backends configured and therefore must provide the `backend` argument or set the `backend` attribute on the user.
+ERROR 2026-05-09 11:39:46,076 log 25160 24868 "POST /accounts/register/ HTTP/1.1" 500 90863
+WARNING 2026-05-09 11:51:27,018 log 18568 9476 "POST /accounts/login/ HTTP/1.1" 403 2503
+WARNING 2026-05-09 11:52:06,290 log 18568 9476 "POST /accounts/login/ HTTP/1.1" 403 2503
+WARNING 2026-05-09 11:56:14,254 log 25604 19824 "POST /accounts/login/ HTTP/1.1" 403 2503
+WARNING 2026-05-09 11:58:48,817 log 25604 23020 Too Many Requests: /accounts/login/
+WARNING 2026-05-09 11:58:48,820 log 25604 23020 "POST /accounts/login/ HTTP/1.1" 429 1632
+WARNING 2026-05-09 12:01:06,748 log 25604 23020 Too Many Requests: /accounts/login/
+WARNING 2026-05-09 12:01:06,751 log 25604 23020 "POST /accounts/login/ HTTP/1.1" 429 1632
+WARNING 2026-05-09 12:01:18,477 log 25604 23020 Too Many Requests: /accounts/login/
+WARNING 2026-05-09 12:01:18,478 log 25604 23020 "POST /accounts/login/ HTTP/1.1" 429 1632
+WARNING 2026-05-09 12:01:39,664 log 25604 25340 Too Many Requests: /accounts/login/
+WARNING 2026-05-09 12:01:39,669 log 25604 25340 "POST /accounts/login/ HTTP/1.1" 429 1632
+WARNING 2026-05-09 12:02:29,944 log 18976 24868 Too Many Requests: /accounts/login/
+WARNING 2026-05-09 12:02:29,947 log 18976 24868 "POST /accounts/login/ HTTP/1.1" 429 1632
+WARNING 2026-05-09 12:02:40,343 log 18976 10816 "POST /accounts/login/ HTTP/1.1" 403 2503
+WARNING 2026-05-09 12:07:51,242 log 25464 18192 Not Found: /accounts/create /
+WARNING 2026-05-09 12:07:51,244 log 25464 18192 "GET /accounts/create%20/ HTTP/1.1" 404 6680
+WARNING 2026-05-09 12:09:10,308 log 25464 18192 "POST / HTTP/1.1" 403 2503
+WARNING 2026-05-09 12:09:43,365 log 25464 18192 Too Many Requests: /
+WARNING 2026-05-09 12:09:43,366 log 25464 18192 "POST / HTTP/1.1" 429 1632
+WARNING 2026-05-09 12:09:47,905 log 25464 18192 Too Many Requests: /accounts/login/
+WARNING 2026-05-09 12:09:47,906 log 25464 18192 "POST /accounts/login/ HTTP/1.1" 429 1632
+WARNING 2026-05-09 13:17:16,933 log 4764 17856 Too Many Requests: /
+WARNING 2026-05-09 13:17:16,936 log 4764 17856 "POST / HTTP/1.1" 429 1632
+WARNING 2026-05-09 13:26:49,215 log 17780 18140 Too Many Requests: /accounts/login/
+WARNING 2026-05-09 13:26:49,217 log 17780 18140 "POST /accounts/login/ HTTP/1.1" 429 1632
+WARNING 2026-05-09 13:32:10,841 log 25780 9112 "POST /accounts/login/ HTTP/1.1" 403 2503
+WARNING 2026-05-09 13:32:16,200 log 25780 9112 "POST /accounts/login/ HTTP/1.1" 403 2503
+ERROR 2026-05-09 14:02:23,558 log 9012 188 Internal Server Error: /dashboard/
+Traceback (most recent call last):
+  File "C:\Users\Administrator\erp_project\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\Administrator\erp_project\company\middleware.py", line 35, in __call__
+    if not exempt and not request.company.is_subscription_active:
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Administrator\erp_project\company\models.py", line 42, in is_subscription_active
+    return self.plan_expires >= timezone.now()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: '>=' not supported between instances of 'datetime.date' and 'datetime.datetime'
+ERROR 2026-05-09 14:02:23,565 log 9012 188 "GET /dashboard/ HTTP/1.1" 500 73982
+WARNING 2026-05-09 14:48:11,818 log 19272 19952 "POST /billing/plans/?expired=1 HTTP/1.1" 403 2503
+WARNING 2026-05-09 15:54:12,394 log 23224 27220 Not Found: /privacy/
+WARNING 2026-05-09 15:54:12,400 log 23224 27220 "GET /privacy/ HTTP/1.1" 404 4358

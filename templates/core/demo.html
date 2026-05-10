@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Live Demo — ERIP System</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --blue: #2563eb; --blue-light: #eff6ff;
+      --green: #16a34a; --green-light: #f0fdf4;
+      --orange: #d97706; --orange-light: #fffbeb;
+      --purple: #7c3aed; --purple-light: #f5f3ff;
+      --border: #e5e7eb; --text: #111827; --muted: #6b7280; --bg: #f3f4f6;
+      --radius: 10px; --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); }
+
+    /* DEMO BANNER */
+    .demo-banner {
+      background: var(--blue); color: #fff; text-align: center;
+      padding: .6rem 1rem; font-size: 13px; font-weight: 500;
+      display: flex; align-items: center; justify-content: center; gap: 12px;
+    }
+    .demo-banner a { color: #fff; font-weight: 600; text-decoration: underline; }
+
+    /* SIDEBAR */
+    .sidebar { width: 220px; height: calc(100vh - 38px); background: #fff; border-right: 1px solid var(--border); position: fixed; top: 38px; left: 0; display: flex; flex-direction: column; padding: 1.25rem 1rem; }
+    .logo { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; margin-bottom: 2rem; text-decoration: none; color: var(--text); }
+    .logo-icon { width: 30px; height: 30px; background: var(--blue-light); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--blue); font-size: 14px; }
+    .nav-section { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: .5rem; margin-top: 1rem; }
+    .nav-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px; font-size: 13px; color: var(--muted); text-decoration: none; margin-bottom: 2px; }
+    .nav-item.active { background: var(--blue-light); color: var(--blue); font-weight: 500; }
+
+    /* MAIN */
+    .main { margin-left: 220px; padding: 2rem; }
+    .page-title { font-size: 20px; font-weight: 600; margin-bottom: .25rem; }
+    .page-sub { font-size: 13px; color: var(--muted); margin-bottom: 1.5rem; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 1.5rem; }
+    .stat-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; }
+    .stat-label { font-size: 12px; color: var(--muted); margin-bottom: .5rem; display: flex; align-items: center; gap: 6px; }
+    .stat-value { font-size: 24px; font-weight: 600; margin-bottom: 2px; }
+    .stat-change { font-size: 12px; color: var(--green); }
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+    .card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; }
+    .card-title { font-size: 14px; font-weight: 600; margin-bottom: 1rem; }
+    .table { width: 100%; border-collapse: collapse; }
+    .table th { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; padding: 0 0 8px; text-align: left; border-bottom: 1px solid var(--border); }
+    .table td { font-size: 13px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .table tr:last-child td { border-bottom: none; }
+    .badge { display: inline-block; font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 20px; }
+    .badge.paid { background: var(--green-light); color: var(--green); }
+    .badge.pending { background: var(--orange-light); color: var(--orange); }
+    .cta-strip { background: var(--blue-light); border: 1px solid #bfdbfe; border-radius: var(--radius); padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+    .cta-strip p { font-size: 14px; font-weight: 500; }
+    .cta-strip span { font-size: 13px; color: var(--muted); }
+    .btn { padding: 9px 20px; background: var(--blue); color: #fff; border: none; border-radius: var(--radius); font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-block; }
+    .btn:hover { opacity: .88; }
+  </style>
+</head>
+<body>
+
+<!-- DEMO BANNER -->
+<div class="demo-banner">
+  <i class="ti ti-eye"></i>
+  You are viewing a <strong>live demo</strong> — data is not real.
+  <a href="/accounts/register/">Create your free account →</a>
+</div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <a href="/" class="logo">
+    <div class="logo-icon"><i class="ti ti-bolt"></i></div>
+    ERIP System
+  </a>
+  <div class="nav-section">Main</div>
+  <a class="nav-item active"><i class="ti ti-layout-dashboard"></i> Dashboard</a>
+  <div class="nav-section">Modules</div>
+  <a class="nav-item"><i class="ti ti-users"></i> Customers</a>
+  <a class="nav-item"><i class="ti ti-file-invoice"></i> Invoices</a>
+  <a class="nav-item"><i class="ti ti-package"></i> Inventory</a>
+  <a class="nav-item"><i class="ti ti-id-badge"></i> HR &amp; Payroll</a>
+  <a class="nav-item"><i class="ti ti-device-mobile"></i> M-Pesa</a>
+  <a class="nav-item"><i class="ti ti-chart-bar"></i> Reports</a>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="cta-strip">
+    <div>
+      <p>Like what you see? This is your ERIP dashboard.</p>
+      <span>Start your free 14-day trial — no credit card needed.</span>
+    </div>
+    <a href="/accounts/register/" class="btn">Start free trial</a>
+  </div>
+
+  <div class="page-title">Good morning, Demo User 👋</div>
+  <p class="page-sub">Here's a preview of your business dashboard.</p>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label"><i class="ti ti-currency-dollar" style="color:var(--blue)"></i> Revenue (Month)</div>
+      <div class="stat-value">KES 284,500</div>
+      <div class="stat-change"><i class="ti ti-trending-up"></i> +12% vs last month</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label"><i class="ti ti-file-invoice" style="color:var(--orange)"></i> Invoices</div>
+      <div class="stat-value">47</div>
+      <div class="stat-change">38 paid · 9 pending</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label"><i class="ti ti-users" style="color:var(--green)"></i> Customers</div>
+      <div class="stat-value">132</div>
+      <div class="stat-change"><i class="ti ti-trending-up"></i> +5 this week</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label"><i class="ti ti-package" style="color:var(--purple)"></i> Products</div>
+      <div class="stat-value">68</div>
+      <div class="stat-change">3 low stock alerts</div>
+    </div>
+  </div>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-title">Recent Invoices</div>
+      <table class="table">
+        <thead><tr><th>Customer</th><th>Amount</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>James Kamau</td><td>KES 12,000</td><td><span class="badge paid">Paid</span></td></tr>
+          <tr><td>Amina Wanjiru</td><td>KES 8,500</td><td><span class="badge paid">Paid</span></td></tr>
+          <tr><td>Peter Mwangi</td><td>KES 23,000</td><td><span class="badge pending">Pending</span></td></tr>
+          <tr><td>Grace Otieno</td><td>KES 5,200</td><td><span class="badge paid">Paid</span></td></tr>
+          <tr><td>David Njoroge</td><td>KES 15,800</td><td><span class="badge pending">Pending</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-title">M-Pesa Transactions</div>
+      <table class="table">
+        <thead><tr><th>Name</th><th>Amount</th><th>Time</th></tr></thead>
+        <tbody>
+          <tr><td>James Kamau</td><td>KES 12,000</td><td>09:14 AM</td></tr>
+          <tr><td>Amina Wanjiru</td><td>KES 8,500</td><td>10:32 AM</td></tr>
+          <tr><td>Grace Otieno</td><td>KES 5,200</td><td>11:05 AM</td></tr>
+          <tr><td>Mercy Achieng</td><td>KES 3,000</td><td>01:22 PM</td></tr>
+          <tr><td>Brian Odhiambo</td><td>KES 7,100</td><td>02:45 PM</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+</body>
+</html>

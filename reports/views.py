@@ -68,11 +68,15 @@ def reports(request):
     company = request.company
 
     if company:
-        payments_qs = Payment.objects.filter(company=company)
-        invoices_qs = Invoice.objects.filter(company=company)
+        payments_qs  = Payment.objects.filter(company=company)
+        invoices_qs  = Invoice.objects.filter(company=company)
+        customers_qs = Customer.objects.filter(company=company)  # ✅
+        products_qs  = Product.objects.filter(company=company)   # ✅
     else:
-        payments_qs = Payment.objects.all()
-        invoices_qs = Invoice.objects.all()
+        payments_qs  = Payment.objects.all()
+        invoices_qs  = Invoice.objects.all()
+        customers_qs = Customer.objects.all()                     # ✅
+        products_qs  = Product.objects.all()                      # ✅
 
     # Monthly revenue - last 6 months
     six_months_ago = timezone.now() - timezone.timedelta(days=180)
@@ -137,7 +141,7 @@ def reports(request):
         'total_revenue':      f"{total_revenue:,.2f}",
         'paid_invoices':      paid_invoices,
         'unpaid_invoices':    unpaid_invoices,
-        'total_customers':    Customer.objects.count(),
-        'total_products':     Product.objects.count(),
+        'total_customers':    customers_qs.count(),  # ✅ fixed
+        'total_products':     products_qs.count(),   # ✅ fixed
     }
     return render(request, 'reports/reports.html', context)

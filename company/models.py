@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 from accounts.models import User
 
 
@@ -20,9 +21,10 @@ class Company(models.Model):
     is_active    = models.BooleanField(default=True)
     created_at   = models.DateTimeField(auto_now_add=True)
 
-    # Subscription fields
+    # ── Subscription fields ──
     plan         = models.CharField(max_length=20, choices=Plan.choices, default=Plan.STARTER)
-    plan_expires = models.DateField(null=True, blank=True)
+    # ← Changed from DateField to DateTimeField so we can expire by minute not just day
+    plan_expires = models.DateTimeField(null=True, blank=True)
     max_users    = models.IntegerField(default=2)
 
     def __str__(self):
@@ -33,10 +35,20 @@ class Company(models.Model):
 
     @property
     def is_subscription_active(self):
-        from django.utils import timezone
+        # If no expiry is set, allow access (grace period / admin-created company)
         if self.plan_expires is None:
-            return True  # no expiry set yet (grace period)
-        return self.plan_expires >= timezone.now().date()
+            return True
+        # Compare full datetime so 5-minute trials work correctly
+        return self.plan_expires >= timezone.now()
+
+    @property
+    def trial_minutes_left(self):
+        # Returns how many minutes remain in the trial (0 if expired)
+        if self.plan_expires is None:
+            return None
+        delta = self.plan_expires - timezone.now()
+        minutes = int(delta.total_seconds() / 60)
+        return max(0, minutes)
 
     @property
     def user_count(self):
@@ -91,7 +103,7 @@ class SubscriptionPayment(models.Model):
     plan         = models.CharField(max_length=20, choices=Company.Plan.choices)
     status       = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING)
     months_paid  = models.IntegerField(default=1)
-    reference    = models.CharField(max_length=100, blank=True)  # Mpesa/bank ref
+    reference    = models.CharField(max_length=100, blank=True)  # M-Pesa/bank ref
     notes        = models.TextField(blank=True)
     paid_at      = models.DateTimeField(null=True, blank=True)
     created_at   = models.DateTimeField(auto_now_add=True)

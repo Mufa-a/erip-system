@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Support — ERIP System</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --blue: #2563eb; --blue-light: #eff6ff; --green: #16a34a; --green-light: #f0fdf4; --border: #e5e7eb; --text: #111827; --muted: #6b7280; --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    body { font-family: var(--font); background: #f3f4f6; padding: 2rem 1rem; }
+    .wrap { max-width: 680px; margin: 0 auto; }
+    .logo { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; margin-bottom: 2rem; text-decoration: none; color: var(--text); }
+    .logo-icon { width: 28px; height: 28px; background: var(--blue-light); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--blue); font-size: 13px; }
+    h1 { font-size: 22px; font-weight: 600; margin-bottom: .5rem; }
+    .subtitle { font-size: 14px; color: var(--muted); margin-bottom: 2rem; }
+    .channels { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 2rem; }
+    .channel { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; text-align: center; }
+    .channel-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; margin: 0 auto 12px; }
+    .channel-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+    .channel-desc { font-size: 12px; color: var(--muted); margin-bottom: 12px; }
+    .channel-link { display: inline-block; font-size: 13px; color: var(--blue); font-weight: 500; text-decoration: none; }
+    .faq { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; }
+    .faq h2 { font-size: 16px; font-weight: 600; margin-bottom: 1rem; }
+    .faq-item { border-bottom: 1px solid var(--border); padding: 1rem 0; }
+    .faq-item:last-child { border-bottom: none; }
+    .faq-q { font-size: 14px; font-weight: 500; margin-bottom: .5rem; }
+    .faq-a { font-size: 13px; color: var(--muted); line-height: 1.7; }
+    .back { display: inline-block; font-size: 13px; color: var(--muted); margin-top: 1.5rem; }
+    .back:hover { color: var(--blue); }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <a href="/" class="logo">
+    <div class="logo-icon">⚡</div>
+    ERIP System
+  </a>
+
+  <h1>Support Center</h1>
+  <p class="subtitle">We're here to help. Reach out through any channel below.</p>
+
+  <div class="channels">
+    <div class="channel">
+      <div class="channel-icon" style="background:var(--blue-light)"><i class="ti ti-mail" style="color:var(--blue)"></i></div>
+      <div class="channel-title">Email</div>
+      <div class="channel-desc">We reply within 24 hours on working days.</div>
+      <a href="mailto:support@eripsystem.co.ke" class="channel-link">support@eripsystem.co.ke</a>
+    </div>
+    <div class="channel">
+      <div class="channel-icon" style="background:var(--green-light)"><i class="ti ti-brand-whatsapp" style="color:var(--green)"></i></div>
+      <div class="channel-title">WhatsApp</div>
+      <div class="channel-desc">Quick help on business days, 8am–6pm.</div>
+      <a href="https://wa.me/254700000000" class="channel-link" target="_blank">Chat on WhatsApp</a>
+    </div>
+    <div class="channel">
+      <div class="channel-icon" style="background:#faf5ff"><i class="ti ti-message-circle" style="color:#7c3aed"></i></div>
+      <div class="channel-title">Contact Form</div>
+      <div class="channel-desc">Send us a detailed message.</div>
+      <a href="/contact/" class="channel-link">Open form →</a>
+    </div>
+  </div>
+
+  <div class="faq">
+    <h2>Frequently Asked Questions</h2>
+    <div class="faq-item">
+      <div class="faq-q">How do I start my free trial?</div>
+      <div class="faq-a">Click "Start free trial" on any page. Create your account — no credit card needed. You get 14 days full access.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">How does M-Pesa integration work?</div>
+      <div class="faq-a">We use the Safaricom Daraja API. Once you enter your Paybill or Till number, customers can pay via STK push and invoices update automatically.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Can I switch plans later?</div>
+      <div class="faq-a">Yes. You can upgrade or downgrade your plan at any time from your account settings. Changes take effect on your next billing cycle.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Is my data safe?</div>
+      <div class="faq-a">Yes. All data is encrypted in transit and at rest. We back up your data daily and store it securely in Kenyan-based servers.</div>
+    </div>
+  </div>
+
+  <a href="/" class="back">← Back to home</a>
+</div>
+</body>
+</html>
