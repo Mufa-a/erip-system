@@ -1,0 +1,37 @@
+services:
+  - type: web
+    name: erip-system
+    env: python
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate
+    startCommand: gunicorn core.wsgi:application
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: ".onrender.com"
+      - key: DB_NAME
+        fromDatabase:
+          name: erip-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: erip-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: erip-db
+          property: password
+      - key: DB_HOST
+        fromDatabase:
+          name: erip-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: erip-db
+          property: port
+
+databases:
+  - name: erip-db
+    plan: free
