@@ -7,13 +7,9 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = { darkMode: 'class' }
-    </script>
+    <script>tailwind.config = { darkMode: 'class' }</script>
     <style>
         body { font-family: 'DM Sans', system-ui, sans-serif; }
-
-        /* ── Light mode variables ── */
         :root {
             --sidebar-bg: #0f1117;
             --sidebar-border: rgba(255,255,255,0.06);
@@ -29,8 +25,6 @@
             --text-secondary: #6b7280;
             --text-muted: #9ca3af;
         }
-
-        /* ── Dark mode variables ── */
         .dark {
             --main-bg: #0d0f16;
             --topbar-bg: #13151f;
@@ -42,23 +36,17 @@
             --text-secondary: #9ca3af;
             --text-muted: #6b7280;
         }
-
-        /* ── Base ── */
         body { background: var(--main-bg); color: var(--text-primary); transition: background 0.2s, color 0.2s; }
 
-        /* ── Sidebar glow ── */
-        aside { position: relative; overflow: hidden; }
+        aside { position: relative; }
         aside::before {
             content: '';
-            position: absolute;
-            top: -60px; left: -60px;
+            position: absolute; top: -60px; left: -60px;
             width: 200px; height: 200px;
             background: radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 70%);
-            pointer-events: none;
-            z-index: 0;
+            pointer-events: none; z-index: 0;
         }
 
-        /* ── Nav links ── */
         .nav-link {
             display: flex; align-items: center; gap: 10px;
             padding: 7px 10px; border-radius: 6px;
@@ -67,45 +55,20 @@
             border-left: 2px solid transparent;
             margin-bottom: 1px; position: relative; z-index: 1;
         }
-        .nav-link:hover { background: rgba(255,255,255,0.06); color: #e5e7eb; transform: translateX(2px); }
+        .nav-link:hover { background: rgba(255,255,255,0.06); color: #e5e7eb; }
         .nav-link.active { background: rgba(99,102,241,0.15); color: #818cf8; border-left-color: #6366f1; font-weight: 500; }
 
-        /* ── Cards ── */
-        .card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 10px;
-            box-shadow: var(--card-shadow);
-        }
+        .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 10px; box-shadow: var(--card-shadow); }
         .stat-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
         .stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
-
-        /* ── Topbar ── */
-        .topbar {
-            background: var(--topbar-bg);
-            border-bottom: 1px solid var(--topbar-border);
-            transition: background 0.2s;
-        }
-
-        /* ── Tables ── */
+        .topbar { background: var(--topbar-bg); border-bottom: 1px solid var(--topbar-border); transition: background 0.2s; }
         .table-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 10px; box-shadow: var(--card-shadow); overflow: hidden; }
         .table-card table { width: 100%; border-collapse: collapse; }
-        .table-card th {
-            font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px;
-            color: var(--text-muted); font-weight: 600;
-            padding: 10px 16px; text-align: left;
-            background: var(--card-bg);
-            border-bottom: 1px solid var(--card-border);
-        }
-        .table-card td {
-            padding: 11px 16px; font-size: 13px;
-            color: var(--text-primary);
-            border-bottom: 1px solid var(--card-border);
-        }
+        .table-card th { font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-muted); font-weight: 600; padding: 10px 16px; text-align: left; background: var(--card-bg); border-bottom: 1px solid var(--card-border); }
+        .table-card td { padding: 11px 16px; font-size: 13px; color: var(--text-primary); border-bottom: 1px solid var(--card-border); }
         .table-card tr:last-child td { border-bottom: none; }
         .table-card tbody tr:hover td { background: rgba(99,102,241,0.04); }
 
-        /* ── Badges ── */
         .badge { display: inline-flex; align-items: center; padding: 2px 9px; border-radius: 20px; font-size: 11px; font-weight: 500; }
         .badge-green { background: rgba(16,185,129,0.12); color: #059669; }
         .badge-amber { background: rgba(245,158,11,0.12); color: #d97706; }
@@ -118,18 +81,10 @@
         .dark .badge-blue  { background: rgba(99,102,241,0.15); color: #818cf8; }
         .dark .badge-gray  { background: rgba(107,114,128,0.15); color: #9ca3af; }
 
-        /* ── Form inputs ── */
-        .form-input {
-            width: 100%; padding: 8px 12px; border-radius: 7px; font-size: 13px;
-            background: var(--card-bg); color: var(--text-primary);
-            border: 1px solid var(--card-border);
-            transition: border-color 0.15s, box-shadow 0.15s;
-            outline: none; font-family: 'DM Sans', sans-serif;
-        }
+        .form-input { width: 100%; padding: 8px 12px; border-radius: 7px; font-size: 13px; background: var(--card-bg); color: var(--text-primary); border: 1px solid var(--card-border); transition: border-color 0.15s, box-shadow 0.15s; outline: none; font-family: 'DM Sans', sans-serif; }
         .form-input:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,0.12); }
         .form-label { font-size: 12px; font-weight: 500; color: var(--text-secondary); margin-bottom: 5px; display: block; }
 
-        /* ── Buttons ── */
         .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 7px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; transition: all 0.15s; text-decoration: none; }
         .btn-primary { background: #6366f1; color: white; }
         .btn-primary:hover { background: #4f46e5; box-shadow: 0 4px 12px rgba(99,102,241,0.3); }
@@ -138,55 +93,56 @@
         .btn-secondary { background: var(--card-bg); color: var(--text-secondary); border: 1px solid var(--card-border); }
         .btn-secondary:hover { background: var(--main-bg); }
 
-        /* ── Mono ── */
         .mono { font-family: 'DM Mono', monospace; }
-
-        /* ── Scrollbar ── */
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 2px; }
         aside ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); }
-
-        /* ── Section title ── */
         .section-title { font-size: 13.5px; font-weight: 600; color: var(--text-primary); margin-bottom: 14px; }
-        /* ── Auto-fix all Tailwind white/gray classes in dark mode ── */
+
+        /* ── SIDEBAR MOBILE ── */
+        #sidebar {
+            position: fixed; top: 0; left: 0; height: 100%;
+            width: 232px; z-index: 50;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--sidebar-border);
+            transform: translateX(-100%);
+            transition: transform 0.25s ease;
+            display: flex; flex-direction: column;
+        }
+        #sidebar.open { transform: translateX(0); }
+
+        /* Desktop: always show sidebar */
+        @media (min-width: 768px) {
+            #sidebar { transform: translateX(0) !important; }
+            #overlay { display: none !important; }
+            #main-content { margin-left: 232px; }
+        }
+
+        /* Mobile: main content takes full width */
+        @media (max-width: 767px) {
+            #main-content { margin-left: 0; }
+        }
+
+        #overlay {
+            display: none;
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 40;
+        }
+        #overlay.show { display: block; }
+
+        /* Dark mode fixes */
         .dark .bg-white { background: var(--card-bg) !important; }
         .dark .bg-gray-50 { background: var(--main-bg) !important; }
         .dark .bg-gray-100 { background: rgba(255,255,255,0.05) !important; }
-        .dark .bg-gray-200 { background: rgba(255,255,255,0.08) !important; }
         .dark .bg-gray-800 { background: var(--card-bg) !important; }
         .dark .bg-gray-900 { background: var(--main-bg) !important; }
-
-        .dark .text-gray-900,
-        .dark .text-gray-800,
-        .dark .text-gray-700 { color: var(--text-primary) !important; }
-        .dark .text-gray-600,
-        .dark .text-gray-500 { color: var(--text-secondary) !important; }
+        .dark .text-gray-900, .dark .text-gray-800, .dark .text-gray-700 { color: var(--text-primary) !important; }
+        .dark .text-gray-600, .dark .text-gray-500 { color: var(--text-secondary) !important; }
         .dark .text-gray-400 { color: var(--text-muted) !important; }
-
-        .dark .border-gray-100,
-        .dark .border-gray-200,
-        .dark .border-gray-300 { border-color: var(--card-border) !important; }
-
-        .dark .divide-gray-100 > *,
-        .dark .divide-gray-200 > * { border-color: var(--card-border) !important; }
-
+        .dark .border-gray-100, .dark .border-gray-200, .dark .border-gray-300 { border-color: var(--card-border) !important; }
         .dark .hover\:bg-gray-50:hover { background: rgba(99,102,241,0.05) !important; }
-        .dark .hover\:bg-gray-100:hover { background: rgba(255,255,255,0.06) !important; }
-
-        .dark thead tr,
-        .dark .bg-gray-50.text-gray-600 { background: var(--card-bg) !important; }
-
-        .dark th { color: var(--text-muted) !important; border-color: var(--card-border) !important; }
-        .dark td { border-color: var(--card-border) !important; }
-
-        .dark .shadow,
-        .dark .shadow-sm,
-        .dark .shadow-md { box-shadow: var(--card-shadow) !important; }
-
-        .dark .rounded-xl.bg-white,
-        .dark .rounded-lg.bg-white { border: 1px solid var(--card-border) !important; }
-
-        /* Method/status badges in dark mode */
+        .dark .shadow, .dark .shadow-sm, .dark .shadow-md { box-shadow: var(--card-shadow) !important; }
         .dark .bg-blue-100 { background: rgba(99,102,241,0.15) !important; }
         .dark .text-blue-700 { color: #818cf8 !important; }
         .dark .bg-green-100 { background: rgba(16,185,129,0.15) !important; }
@@ -197,176 +153,197 @@
         .dark .text-yellow-700 { color: #fbbf24 !important; }
         .dark .bg-purple-100 { background: rgba(168,85,247,0.15) !important; }
         .dark .text-purple-700 { color: #c084fc !important; }
-
-        /* Input fields */
-        .dark input,
-        .dark select,
-        .dark textarea {
-            background: var(--card-bg) !important;
-            color: var(--text-primary) !important;
-            border-color: var(--card-border) !important;
-        }
-        .dark input::placeholder,
-        .dark textarea::placeholder { color: var(--text-muted) !important; }
+        .dark input, .dark select, .dark textarea { background: var(--card-bg) !important; color: var(--text-primary) !important; border-color: var(--card-border) !important; }
+        .dark input::placeholder, .dark textarea::placeholder { color: var(--text-muted) !important; }
     </style>
 </head>
 
 <body>
-<div class="flex h-screen overflow-hidden">
 
-    <!-- ── Sidebar ── -->
-    <aside class="w-[232px] flex-shrink-0 flex flex-col fixed h-full z-10"
-           style="background:var(--sidebar-bg); border-right:1px solid var(--sidebar-border);">
+<!-- Overlay for mobile -->
+<div id="overlay" onclick="closeSidebar()"></div>
 
-        <!-- Logo -->
-        <div class="p-5 pb-4" style="border-bottom:1px solid var(--sidebar-border);">
-            <div class="flex items-center gap-2.5">
-                <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-                     style="background:linear-gradient(135deg,#6366f1,#8b5cf6);box-shadow:0 4px 12px rgba(99,102,241,0.4);">
-                    <i class="fas fa-bolt text-white text-xs"></i>
+<!-- SIDEBAR -->
+<aside id="sidebar">
+
+    <!-- Logo -->
+    <div class="p-5 pb-4" style="border-bottom:1px solid var(--sidebar-border); flex-shrink:0;">
+        <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                 style="background:linear-gradient(135deg,#6366f1,#8b5cf6);box-shadow:0 4px 12px rgba(99,102,241,0.4);">
+                <i class="fas fa-bolt text-white text-xs"></i>
+            </div>
+            <div>
+                <div class="text-sm font-semibold text-white tracking-tight">ERIP System</div>
+                <div class="text-[10.5px]" style="color:var(--sidebar-text);">Business Management</div>
+            </div>
+            <!-- Close button mobile only -->
+            <button onclick="closeSidebar()" class="ml-auto md:hidden text-gray-400 hover:text-white">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Company -->
+    <div class="px-4 py-2.5" style="border-bottom:1px solid var(--sidebar-border); background:rgba(255,255,255,0.02); flex-shrink:0;">
+        <div class="flex items-center justify-between">
+            <div class="min-w-0">
+                <div class="text-[9.5px] font-semibold uppercase tracking-widest mb-1" style="color:#4b5563;">Company</div>
+                <div class="text-[12.5px] font-medium text-gray-300 truncate">
+                    {% if request.company %}{{ request.company.name }}{% else %}No Company{% endif %}
                 </div>
-                <div>
-                    <div class="text-sm font-semibold text-white tracking-tight">ERIP System</div>
-                    <div class="text-[10.5px]" style="color:var(--sidebar-text);">Business Management</div>
-                </div>
             </div>
-        </div>
-
-        <!-- Company -->
-        <div class="px-4 py-2.5" style="border-bottom:1px solid var(--sidebar-border); background:rgba(255,255,255,0.02);">
-            <div class="flex items-center justify-between">
-                <div class="min-w-0">
-                    <div class="text-[9.5px] font-semibold uppercase tracking-widest mb-1" style="color:#4b5563;">Company</div>
-                    <div class="text-[12.5px] font-medium text-gray-300 truncate">
-                        {% if request.company %}{{ request.company.name }}{% else %}No Company{% endif %}
-                    </div>
-                </div>
-                <a href="{% url 'company_settings' %}" style="color:#4b5563;" class="hover:text-white ml-2 flex-shrink-0 transition-colors">
-                    <i class="fas fa-cog text-xs"></i>
-                </a>
-            </div>
-        </div>
-
-        <!-- User -->
-        <div class="px-4 py-2.5 flex items-center gap-2.5" style="border-bottom:1px solid var(--sidebar-border);">
-            <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
-                 style="background:linear-gradient(135deg,#6366f1,#8b5cf6);">
-                {{ request.user.username|first|upper }}
-            </div>
-            <div class="min-w-0 flex-1">
-                <div class="text-[12.5px] font-medium text-gray-200 truncate">{{ request.user.username }}</div>
-                <div class="text-[10.5px]" style="color:var(--sidebar-text);">{{ request.user.get_role_display }}</div>
-            </div>
-            <a href="{% url 'toggle_theme' %}" class="flex-shrink-0 transition-colors duration-150 text-xs"
-               style="color:var(--sidebar-text);" title="Toggle theme">
-                {% if request.user.theme == 'dark' %}
-                    <i class="fas fa-sun" style="color:#fbbf24;"></i>
-                {% else %}
-                    <i class="fas fa-moon"></i>
-                {% endif %}
+            <a href="{% url 'company_settings' %}" style="color:#4b5563;" class="hover:text-white ml-2 flex-shrink-0 transition-colors">
+                <i class="fas fa-cog text-xs"></i>
             </a>
         </div>
+    </div>
 
-        <!-- Nav -->
-        <nav class="flex-1 px-2.5 py-3 overflow-y-auto">
-
-            <p class="text-[9.5px] font-semibold uppercase tracking-widest px-2.5 pb-1.5 pt-1" style="color:#4b5563;">Main</p>
-            <a href="/dashboard/" class="nav-link {% if '/dashboard/' in request.path %}active{% endif %}">
-                <i class="fas fa-tachometer-alt w-4 text-[11px] text-indigo-400"></i><span>Dashboard</span>
-            </a>
-            <a href="/customers/" class="nav-link {% if '/customers/' in request.path %}active{% endif %}">
-                <i class="fas fa-users w-4 text-[11px] text-emerald-400"></i><span>Customers</span>
-            </a>
-            <a href="/products/" class="nav-link {% if '/products/' in request.path %}active{% endif %}">
-                <i class="fas fa-box w-4 text-[11px] text-amber-400"></i><span>Products</span>
-            </a>
-
-            <p class="text-[9.5px] font-semibold uppercase tracking-widest px-2.5 pb-1.5 pt-3" style="color:#4b5563;">Finance</p>
-            <a href="/sales/" class="nav-link {% if '/sales/' in request.path %}active{% endif %}">
-                <i class="fas fa-file-invoice w-4 text-[11px] text-purple-400"></i><span>Sales / Invoices</span>
-            </a>
-            <a href="/payments/" class="nav-link {% if '/payments/' in request.path %}active{% endif %}">
-                <i class="fas fa-money-bill w-4 text-[11px] text-green-400"></i><span>Payments</span>
-            </a>
-
-            <p class="text-[9.5px] font-semibold uppercase tracking-widest px-2.5 pb-1.5 pt-3" style="color:#4b5563;">Operations</p>
-            <a href="/inventory/" class="nav-link {% if '/inventory/' in request.path %}active{% endif %}">
-                <i class="fas fa-warehouse w-4 text-[11px] text-orange-400"></i><span>Inventory</span>
-            </a>
-            <a href="/suppliers/" class="nav-link {% if '/suppliers/' in request.path %}active{% endif %}">
-                <i class="fas fa-truck w-4 text-[11px] text-red-400"></i><span>Suppliers</span>
-            </a>
-            <a href="/hr/employees/" class="nav-link {% if '/hr/' in request.path %}active{% endif %}">
-                <i class="fas fa-id-card w-4 text-[11px] text-indigo-300"></i><span>HR & Payroll</span>
-            </a>
-
-            <p class="text-[9.5px] font-semibold uppercase tracking-widest px-2.5 pb-1.5 pt-3" style="color:#4b5563;">System</p>
-            <a href="/dashboard/reports/" class="nav-link {% if '/reports/' in request.path %}active{% endif %}">
-                <i class="fas fa-chart-bar w-4 text-[11px] text-pink-400"></i><span>Reports</span>
-            </a>
-            <a href="/accounts/users/" class="nav-link {% if '/accounts/' in request.path %}active{% endif %}">
-                <i class="fas fa-user-cog w-4 text-[11px] text-cyan-400"></i><span>Users</span>
-            </a>
-            <a href="/company/" class="nav-link {% if '/company/' in request.path %}active{% endif %}">
-                <i class="fas fa-building w-4 text-[11px] text-teal-400"></i><span>Companies</span>
-            </a>
-        </nav>
-
-        <!-- Logout -->
-        <div class="p-2.5" style="border-top:1px solid var(--sidebar-border);">
-            <a href="/accounts/logout/" class="nav-link" style="color:#6b7280;"
-               onmouseover="this.style.background='rgba(239,68,68,0.1)';this.style.color='#f87171';"
-               onmouseout="this.style.background='';this.style.color='#6b7280';">
-                <i class="fas fa-sign-out-alt w-4 text-[11px]"></i><span>Logout</span>
-            </a>
+    <!-- User -->
+    <div class="px-4 py-2.5 flex items-center gap-2.5" style="border-bottom:1px solid var(--sidebar-border); flex-shrink:0;">
+        <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
+             style="background:linear-gradient(135deg,#6366f1,#8b5cf6);">
+            {{ request.user.username|first|upper }}
         </div>
-    </aside>
+        <div class="min-w-0 flex-1">
+            <div class="text-[12.5px] font-medium text-gray-200 truncate">{{ request.user.username }}</div>
+            <div class="text-[10.5px]" style="color:var(--sidebar-text);">{{ request.user.get_role_display }}</div>
+        </div>
+        <a href="{% url 'toggle_theme' %}" class="flex-shrink-0 transition-colors duration-150 text-xs"
+           style="color:var(--sidebar-text);" title="Toggle theme">
+            {% if request.user.theme == 'dark' %}
+                <i class="fas fa-sun" style="color:#fbbf24;"></i>
+            {% else %}
+                <i class="fas fa-moon"></i>
+            {% endif %}
+        </a>
+    </div>
 
-    <!-- ── Main ── -->
-    <main class="ml-[232px] flex-1 flex flex-col overflow-hidden" style="background:var(--main-bg);">
+    <!-- Nav -->
+    <nav class="flex-1 px-2.5 py-3 overflow-y-auto">
+        <p class="text-[9.5px] font-semibold uppercase tracking-widest px-2.5 pb-1.5 pt-1" style="color:#4b5563;">Main</p>
+        <a href="/dashboard/" class="nav-link {% if '/dashboard/' in request.path %}active{% endif %}" onclick="closeSidebar()">
+            <i class="fas fa-tachometer-alt w-4 text-[11px] text-indigo-400"></i><span>Dashboard</span>
+        </a>
+        <a href="/customers/" class="nav-link {% if '/customers/' in request.path %}active{% endif %}" onclick="closeSidebar()">
+            <i class="fas fa-users w-4 text-[11px] text-emerald-400"></i><span>Customers</span>
+        </a>
+        <a href="/products/" class="nav-link {% if '/products/' in request.path %}active{% endif %}" onclick="closeSidebar()">
+            <i class="fas fa-box w-4 text-[11px] text-amber-400"></i><span>Products</span>
+        </a>
 
-        <!-- Topbar -->
-        <div class="topbar flex-shrink-0 flex items-center justify-between px-6 h-14">
+        <p class="text-[9.5px] font-semibold uppercase tracking-widest px-2.5 pb-1.5 pt-3" style="color:#4b5563;">Finance</p>
+        <a href="/sales/" class="nav-link {% if '/sales/' in request.path %}active{% endif %}" onclick="closeSidebar()">
+            <i class="fas fa-file-invoice w-4 text-[11px] text-purple-400"></i><span>Sales / Invoices</span>
+        </a>
+        <a href="/payments/" class="nav-link {% if '/payments/' in request.path %}active{% endif %}" onclick="closeSidebar()">
+            <i class="fas fa-money-bill w-4 text-[11px] text-green-400"></i><span>Payments</span>
+        </a>
+
+        <p class="text-[9.5px] font-semibold uppercase tracking-widest px-2.5 pb-1.5 pt-3" style="color:#4b5563;">Operations</p>
+        <a href="/inventory/" class="nav-link {% if '/inventory/' in request.path %}active{% endif %}" onclick="closeSidebar()">
+            <i class="fas fa-warehouse w-4 text-[11px] text-orange-400"></i><span>Inventory</span>
+        </a>
+        <a href="/suppliers/" class="nav-link {% if '/suppliers/' in request.path %}active{% endif %}" onclick="closeSidebar()">
+            <i class="fas fa-truck w-4 text-[11px] text-red-400"></i><span>Suppliers</span>
+        </a>
+        <a href="/hr/employees/" class="nav-link {% if '/hr/' in request.path %}active{% endif %}" onclick="closeSidebar()">
+            <i class="fas fa-id-card w-4 text-[11px] text-indigo-300"></i><span>HR & Payroll</span>
+        </a>
+
+        <p class="text-[9.5px] font-semibold uppercase tracking-widest px-2.5 pb-1.5 pt-3" style="color:#4b5563;">System</p>
+        <a href="/dashboard/reports/" class="nav-link {% if '/reports/' in request.path %}active{% endif %}" onclick="closeSidebar()">
+            <i class="fas fa-chart-bar w-4 text-[11px] text-pink-400"></i><span>Reports</span>
+        </a>
+        <a href="/accounts/users/" class="nav-link {% if '/accounts/' in request.path %}active{% endif %}" onclick="closeSidebar()">
+            <i class="fas fa-user-cog w-4 text-[11px] text-cyan-400"></i><span>Users</span>
+        </a>
+        <a href="/company/" class="nav-link {% if '/company/' in request.path %}active{% endif %}" onclick="closeSidebar()">
+            <i class="fas fa-building w-4 text-[11px] text-teal-400"></i><span>Companies</span>
+        </a>
+    </nav>
+
+    <!-- Logout -->
+    <div class="p-2.5" style="border-top:1px solid var(--sidebar-border); flex-shrink:0;">
+        <a href="/accounts/logout/" class="nav-link" style="color:#6b7280;"
+           onmouseover="this.style.background='rgba(239,68,68,0.1)';this.style.color='#f87171';"
+           onmouseout="this.style.background='';this.style.color='#6b7280';">
+            <i class="fas fa-sign-out-alt w-4 text-[11px]"></i><span>Logout</span>
+        </a>
+    </div>
+</aside>
+
+<!-- MAIN -->
+<div id="main-content" class="flex flex-col min-h-screen" style="background:var(--main-bg);">
+
+    <!-- Topbar -->
+    <div class="topbar flex-shrink-0 flex items-center justify-between px-4 md:px-6 h-14 sticky top-0 z-30">
+        <div class="flex items-center gap-3">
+            <!-- Hamburger — mobile only -->
+            <button id="hamburger" onclick="openSidebar()"
+                    class="md:hidden flex flex-col justify-center items-center w-9 h-9 rounded-lg transition-colors"
+                    style="color:var(--text-secondary);">
+                <span class="block w-5 h-0.5 bg-current mb-1"></span>
+                <span class="block w-5 h-0.5 bg-current mb-1"></span>
+                <span class="block w-4 h-0.5 bg-current"></span>
+            </button>
             <h2 class="text-[15px] font-semibold tracking-tight" style="color:var(--text-primary);">
                 {% block page_title %}Dashboard{% endblock %}
             </h2>
-            <div class="flex items-center gap-3">
-                {% if request.company %}
-                <span class="mono text-[11.5px] px-3 py-1 rounded-full font-medium"
-                      style="background:var(--card-bg);color:var(--text-secondary);border:1px solid var(--card-border);">
-                    {{ request.company.currency }}
-                </span>
-                {% endif %}
-                <span class="text-[13px]" style="color:var(--text-secondary);">{{ request.user.username }}</span>
-            </div>
         </div>
-
-        <!-- Content -->
-        <div class="flex-1 overflow-y-auto p-6" style="background:var(--main-bg);">
-
-            <!-- Messages -->
-            {% if messages %}
-            <div class="mb-5 space-y-2">
-                {% for message in messages %}
-                <div class="flex items-center gap-2.5 px-4 py-2.5 rounded-lg text-sm"
-                     style="border:1px solid;
-                     {% if message.tags == 'success' %}background:rgba(16,185,129,0.08);color:#059669;border-color:rgba(16,185,129,0.2);
-                     {% elif message.tags == 'error' %}background:rgba(239,68,68,0.08);color:#dc2626;border-color:rgba(239,68,68,0.2);
-                     {% elif message.tags == 'info' %}background:rgba(99,102,241,0.08);color:#6366f1;border-color:rgba(99,102,241,0.2);
-                     {% else %}background:var(--card-bg);color:var(--text-secondary);border-color:var(--card-border);{% endif %}">
-                    {% if message.tags == 'success' %}<i class="fas fa-check-circle text-xs"></i>
-                    {% elif message.tags == 'error' %}<i class="fas fa-exclamation-circle text-xs"></i>
-                    {% elif message.tags == 'info' %}<i class="fas fa-info-circle text-xs"></i>
-                    {% else %}<i class="fas fa-circle text-xs"></i>{% endif %}
-                    {{ message }}
-                </div>
-                {% endfor %}
-            </div>
+        <div class="flex items-center gap-3">
+            {% if request.company %}
+            <span class="mono text-[11.5px] px-3 py-1 rounded-full font-medium hidden sm:inline-block"
+                  style="background:var(--card-bg);color:var(--text-secondary);border:1px solid var(--card-border);">
+                {{ request.company.currency }}
+            </span>
             {% endif %}
-
-            {% block content %}{% endblock %}
+            <span class="text-[13px] hidden sm:inline" style="color:var(--text-secondary);">{{ request.user.username }}</span>
         </div>
-    </main>
+    </div>
+
+    <!-- Content -->
+    <div class="flex-1 overflow-y-auto p-4 md:p-6" style="background:var(--main-bg);">
+
+        {% if messages %}
+        <div class="mb-5 space-y-2">
+            {% for message in messages %}
+            <div class="flex items-center gap-2.5 px-4 py-2.5 rounded-lg text-sm"
+                 style="border:1px solid;
+                 {% if message.tags == 'success' %}background:rgba(16,185,129,0.08);color:#059669;border-color:rgba(16,185,129,0.2);
+                 {% elif message.tags == 'error' %}background:rgba(239,68,68,0.08);color:#dc2626;border-color:rgba(239,68,68,0.2);
+                 {% elif message.tags == 'info' %}background:rgba(99,102,241,0.08);color:#6366f1;border-color:rgba(99,102,241,0.2);
+                 {% else %}background:var(--card-bg);color:var(--text-secondary);border-color:var(--card-border);{% endif %}">
+                {% if message.tags == 'success' %}<i class="fas fa-check-circle text-xs"></i>
+                {% elif message.tags == 'error' %}<i class="fas fa-exclamation-circle text-xs"></i>
+                {% elif message.tags == 'info' %}<i class="fas fa-info-circle text-xs"></i>
+                {% else %}<i class="fas fa-circle text-xs"></i>{% endif %}
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </div>
 </div>
+
+<script>
+    function openSidebar() {
+        document.getElementById('sidebar').classList.add('open');
+        document.getElementById('overlay').classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeSidebar() {
+        document.getElementById('sidebar').classList.remove('open');
+        document.getElementById('overlay').classList.remove('show');
+        document.body.style.overflow = '';
+    }
+    // Close sidebar on resize to desktop
+    window.addEventListener('resize', function() {
+        if (window.innerWidth >= 768) closeSidebar();
+    });
+</script>
+
 </body>
 </html>
