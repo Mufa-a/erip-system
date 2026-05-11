@@ -1,0 +1,251 @@
+{% extends 'base.html' %}
+{% block title %}M-Pesa Settings{% endblock %}
+{% block page_title %}M-Pesa Settings{% endblock %}
+
+{% block content %}
+{# ============================================================
+   company/mpesa_settings.html
+   Per-company Daraja API credentials form.
+   - Credential fields show masked (••••••) if already saved
+   - Leave blank to keep existing saved value
+   - Test Connection button checks credentials live via AJAX
+   ============================================================ #}
+
+<div class="max-w-2xl mx-auto">
+
+    <!-- Info banner -->
+    <div class="rounded-xl p-4 mb-6 flex items-start gap-3"
+         style="background:#1e3a5f; border:1px solid #2d5a8e;">
+        <i class="fas fa-shield-alt text-blue-400 mt-0.5"></i>
+        <div>
+            <p class="text-sm font-semibold" style="color:#93c5fd;">Your credentials are encrypted</p>
+            <p class="text-xs mt-1" style="color:#cbd5e1;">
+                All M-Pesa credentials are encrypted before being stored.
+                Even your system administrator cannot read them in plain text.
+            </p>
+        </div>
+    </div>
+
+    <div class="rounded-xl shadow p-4 md:p-6" style="background:var(--card-bg, #1e2330); border:1px solid var(--card-border, #2d3448);">
+
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h3 class="text-lg font-semibold" style="color:var(--text-main, #e5e7eb);">
+                    M-Pesa Configuration
+                </h3>
+                <p class="text-xs mt-1" style="color:var(--text-muted, #9ca3af);">
+                    {{ company.name }} — Enter your Daraja API credentials below
+                </p>
+            </div>
+            <!-- Status badge -->
+            {% if mpesa_cfg.is_configured %}
+            <span class="bg-green-900 text-green-300 px-3 py-1 rounded-full text-xs font-medium">
+                ✓ Configured
+            </span>
+            {% else %}
+            <span class="bg-yellow-900 text-yellow-300 px-3 py-1 rounded-full text-xs font-medium">
+                ⚠ Not Configured
+            </span>
+            {% endif %}
+        </div>
+
+        <!-- Form -->
+        <form method="POST" id="mpesaForm">
+            {% csrf_token %}
+
+            <!-- Environment -->
+            <div class="mb-4">
+                <label class="block text-xs font-medium mb-1.5" style="color:var(--text-muted, #9ca3af);">
+                    Environment
+                </label>
+                <select name="environment"
+                    class="w-full px-3 py-2.5 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    style="background:var(--table-head-bg, #252b3b); border:1px solid var(--card-border, #2d3448); color:var(--text-main, #e5e7eb);">
+                    <option value="sandbox"    {% if mpesa_cfg.environment == 'sandbox'    %}selected{% endif %}>
+                        🧪 Sandbox (Testing)
+                    </option>
+                    <option value="production" {% if mpesa_cfg.environment == 'production' %}selected{% endif %}>
+                        🚀 Production (Live)
+                    </option>
+                </select>
+                <p class="text-xs mt-1" style="color:var(--text-muted, #9ca3af);">
+                    Use Sandbox for testing. Switch to Production when going live.
+                </p>
+            </div>
+
+            <!-- Shortcode -->
+            <div class="mb-4">
+                <label class="block text-xs font-medium mb-1.5" style="color:var(--text-muted, #9ca3af);">
+                    M-Pesa Shortcode
+                </label>
+                <input type="text" name="shortcode"
+                    value="{{ mpesa_cfg.shortcode }}"
+                    placeholder="e.g. 174379"
+                    class="w-full px-3 py-2.5 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    style="background:var(--table-head-bg, #252b3b); border:1px solid var(--card-border, #2d3448); color:var(--text-main, #e5e7eb);">
+                <p class="text-xs mt-1" style="color:var(--text-muted, #9ca3af);">
+                    Your Paybill or Till number. Sandbox default: 174379
+                </p>
+            </div>
+
+            <!-- Consumer Key -->
+            <div class="mb-4">
+                <label class="block text-xs font-medium mb-1.5" style="color:var(--text-muted, #9ca3af);">
+                    Consumer Key
+                    {% if has_consumer_key %}
+                    <span class="ml-2 bg-green-900 text-green-300 px-2 py-0.5 rounded-full text-xs">✓ Saved</span>
+                    {% endif %}
+                </label>
+                <input type="password" name="consumer_key"
+                    placeholder="{% if has_consumer_key %}Leave blank to keep existing{% else %}Enter Consumer Key{% endif %}"
+                    autocomplete="new-password"
+                    class="w-full px-3 py-2.5 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    style="background:var(--table-head-bg, #252b3b); border:1px solid var(--card-border, #2d3448); color:var(--text-main, #e5e7eb);">
+                <p class="text-xs mt-1" style="color:var(--text-muted, #9ca3af);">
+                    From Daraja portal → My Apps → your app
+                </p>
+            </div>
+
+            <!-- Consumer Secret -->
+            <div class="mb-4">
+                <label class="block text-xs font-medium mb-1.5" style="color:var(--text-muted, #9ca3af);">
+                    Consumer Secret
+                    {% if has_consumer_secret %}
+                    <span class="ml-2 bg-green-900 text-green-300 px-2 py-0.5 rounded-full text-xs">✓ Saved</span>
+                    {% endif %}
+                </label>
+                <input type="password" name="consumer_secret"
+                    placeholder="{% if has_consumer_secret %}Leave blank to keep existing{% else %}Enter Consumer Secret{% endif %}"
+                    autocomplete="new-password"
+                    class="w-full px-3 py-2.5 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    style="background:var(--table-head-bg, #252b3b); border:1px solid var(--card-border, #2d3448); color:var(--text-main, #e5e7eb);">
+            </div>
+
+            <!-- Passkey -->
+            <div class="mb-4">
+                <label class="block text-xs font-medium mb-1.5" style="color:var(--text-muted, #9ca3af);">
+                    Lipa Na M-Pesa Passkey
+                    {% if has_passkey %}
+                    <span class="ml-2 bg-green-900 text-green-300 px-2 py-0.5 rounded-full text-xs">✓ Saved</span>
+                    {% endif %}
+                </label>
+                <input type="password" name="passkey"
+                    placeholder="{% if has_passkey %}Leave blank to keep existing{% else %}Enter Passkey{% endif %}"
+                    autocomplete="new-password"
+                    class="w-full px-3 py-2.5 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    style="background:var(--table-head-bg, #252b3b); border:1px solid var(--card-border, #2d3448); color:var(--text-main, #e5e7eb);">
+                <p class="text-xs mt-1" style="color:var(--text-muted, #9ca3af);">
+                    From Daraja portal → Lipa Na M-Pesa → Passkey
+                </p>
+            </div>
+
+            <!-- Callback URL -->
+            <div class="mb-4">
+                <label class="block text-xs font-medium mb-1.5" style="color:var(--text-muted, #9ca3af);">
+                    Callback URL
+                </label>
+                <input type="url" name="callback_url"
+                    value="{{ mpesa_cfg.callback_url }}"
+                    placeholder="https://erip-system.onrender.com/payments/mpesa-callback/"
+                    class="w-full px-3 py-2.5 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    style="background:var(--table-head-bg, #252b3b); border:1px solid var(--card-border, #2d3448); color:var(--text-main, #e5e7eb);">
+                <p class="text-xs mt-1" style="color:var(--text-muted, #9ca3af);">
+                    Must be a public HTTPS URL. Safaricom posts payment results here.
+                </p>
+            </div>
+
+            <!-- Enable toggle -->
+            <div class="flex items-center gap-3 mb-6 p-3 rounded-lg"
+                 style="background:var(--table-head-bg, #252b3b);">
+                <input type="checkbox" name="is_enabled" id="is_enabled"
+                    {% if mpesa_cfg.is_enabled %}checked{% endif %}
+                    class="w-4 h-4 rounded text-blue-500">
+                <label for="is_enabled" class="text-sm" style="color:var(--text-main, #e5e7eb);">
+                    Enable M-Pesa payments for this company
+                </label>
+            </div>
+
+            <!-- Action buttons -->
+            <div class="flex flex-col sm:flex-row gap-3">
+                <button type="submit"
+                    class="flex-1 bg-blue-600 text-white px-4 py-2.5 rounded-lg hover:bg-blue-700 transition text-sm font-medium">
+                    <i class="fas fa-save mr-2"></i> Save Settings
+                </button>
+                <button type="button" id="testBtn"
+                    class="flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition"
+                    style="background:var(--table-head-bg, #252b3b); border:1px solid var(--card-border, #2d3448); color:var(--text-main, #e5e7eb);">
+                    <i class="fas fa-plug mr-2"></i> Test Connection
+                </button>
+            </div>
+
+            <!-- Test result box (hidden until test runs) -->
+            <div id="testResult" class="hidden mt-4 p-3 rounded-lg text-sm"></div>
+
+        </form>
+
+    </div>
+
+    <!-- Where to find credentials guide -->
+    <div class="rounded-xl p-4 mt-6" style="background:var(--card-bg, #1e2330); border:1px solid var(--card-border, #2d3448);">
+        <h4 class="text-sm font-semibold mb-3" style="color:var(--text-main, #e5e7eb);">
+            <i class="fas fa-question-circle mr-2 text-blue-400"></i>
+            Where to find your credentials
+        </h4>
+        <ol class="space-y-2 text-xs" style="color:var(--text-muted, #9ca3af);">
+            <li>1. Go to <a href="https://developer.safaricom.co.ke" target="_blank" class="text-blue-400 hover:underline">developer.safaricom.co.ke</a></li>
+            <li>2. Login → <strong style="color:var(--text-main,#e5e7eb);">My Apps</strong> → click your app</li>
+            <li>3. Copy <strong style="color:var(--text-main,#e5e7eb);">Consumer Key</strong> and <strong style="color:var(--text-main,#e5e7eb);">Consumer Secret</strong></li>
+            <li>4. Click <strong style="color:var(--text-main,#e5e7eb);">APIs</strong> tab → <strong style="color:var(--text-main,#e5e7eb);">Lipa Na M-Pesa Online</strong> → copy the <strong style="color:var(--text-main,#e5e7eb);">Passkey</strong></li>
+            <li>5. For Sandbox shortcode use: <strong style="color:#93c5fd;">174379</strong></li>
+        </ol>
+    </div>
+
+</div>
+
+<script>
+// Test Connection button — calls /company/mpesa/test/ and shows result
+document.getElementById('testBtn').addEventListener('click', function () {
+    const btn    = this;
+    const result = document.getElementById('testResult');
+
+    btn.disabled    = true;
+    btn.innerHTML   = '<i class="fas fa-spinner fa-spin mr-2"></i> Testing...';
+    result.className = 'mt-4 p-3 rounded-lg text-sm';
+    result.style.display = 'block';
+    result.style.background = 'var(--table-head-bg, #252b3b)';
+    result.style.color      = 'var(--text-muted, #9ca3af)';
+    result.textContent      = 'Connecting to Safaricom...';
+
+    fetch("{% url 'mpesa_test' %}", {
+        method: 'GET',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(r => r.json())
+    .then(data => {
+        result.style.display = 'block';
+        if (data.success) {
+            result.style.background = '#14532d';
+            result.style.color      = '#86efac';
+            result.style.border     = '1px solid #166534';
+        } else {
+            result.style.background = '#450a0a';
+            result.style.color      = '#fca5a5';
+            result.style.border     = '1px solid #7f1d1d';
+        }
+        result.textContent = data.message;
+    })
+    .catch(() => {
+        result.style.display    = 'block';
+        result.style.background = '#450a0a';
+        result.style.color      = '#fca5a5';
+        result.textContent      = 'Request failed. Check your internet connection.';
+    })
+    .finally(() => {
+        btn.disabled  = false;
+        btn.innerHTML = '<i class="fas fa-plug mr-2"></i> Test Connection';
+    });
+});
+</script>
+
+{% endblock %}
