@@ -174,6 +174,10 @@ MPESA_CALLBACK_URL    = config('MPESA_CALLBACK_URL',    default='')
 MPESA_ENV             = config('MPESA_ENV',             default='sandbox')
 
 # ============================================================
+# FIELD ENCRYPTION
+# ============================================================
+FIELD_ENCRYPTION_KEY = config('FIELD_ENCRYPTION_KEY', default='')
+# ============================================================
 # AFRICA'S TALKING SMS
 # ============================================================
 AT_USERNAME = config('AT_USERNAME', default='sandbox')
