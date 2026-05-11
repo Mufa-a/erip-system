@@ -1,9 +1,11 @@
 africastalking==2.0.2
 asgiref==3.11.1
 certifi==2026.4.22
+cffi==2.0.0
 channels==4.3.2
 channels_redis==4.3.0
 charset-normalizer==3.4.7
+cryptography==48.0.0
 distlib==0.4.0
 Django==6.0.4
 django-axes==8.3.1
@@ -17,6 +19,7 @@ packaging==26.2
 pillow==12.2.0
 platformdirs==4.9.6
 psycopg2-binary==2.9.12
+pycparser==3.0
 pytailwindcss==0.3.0
 python-dateutil==2.9.0.post0
 python-decouple==3.8
