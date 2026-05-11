@@ -1,51 +1,72 @@
 {% extends 'base.html' %}
 {% block title %}My Companies{% endblock %}
 {% block page_title %}My Companies{% endblock %}
+
+{# ============================================================
+   companies.html
+   Fixes:
+   1. Replaced bg-white / text-gray-* with CSS variables
+   2. Cards are already single-column (naturally mobile-friendly),
+      but improved padding/layout for small screens
+   ============================================================ #}
+
 {% block content %}
 <div class="max-w-3xl mx-auto">
-    <div class="flex justify-between items-center mb-6">
-        <h3 class="text-lg font-semibold text-gray-700">Your Companies</h3>
+
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+        <h3 class="text-lg font-semibold" style="color:var(--text-main, #e5e7eb);">Your Companies</h3>
         <a href="{% url 'company_create' %}"
-            class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+            class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition inline-flex items-center gap-2 w-fit">
             <i class="fas fa-plus"></i> New Company
         </a>
     </div>
+
     {% for m in memberships %}
-    <div class="bg-white rounded-xl shadow p-6 mb-4 flex items-center justify-between">
-        <div class="flex items-center space-x-4">
+    <div class="rounded-xl shadow p-4 mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+         style="background:var(--card-bg, #1e2330); border:1px solid var(--card-border, #2d3448);">
+
+        <!-- Logo + Company info -->
+        <div class="flex items-center gap-4 min-w-0">
             {% if m.company.logo %}
-            <img src="{{ m.company.logo.url }}" class="w-12 h-12 rounded-lg object-cover">
+            <img src="{{ m.company.logo.url }}" class="w-12 h-12 rounded-lg object-cover flex-shrink-0">
             {% else %}
-            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <i class="fas fa-building text-blue-600 text-xl"></i>
+            <div class="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0"
+                 style="background:var(--table-head-bg, #252b3b);">
+                <i class="fas fa-building text-blue-400 text-xl"></i>
             </div>
             {% endif %}
-            <div>
-                <p class="font-semibold text-gray-800">{{ m.company.name }}</p>
-                <p class="text-sm text-gray-500">{{ m.company.city }} • {{ m.get_role_display }}</p>
+            <div class="min-w-0">
+                <p class="font-semibold truncate" style="color:var(--text-main, #e5e7eb);">{{ m.company.name }}</p>
+                <p class="text-sm" style="color:var(--text-muted, #9ca3af);">{{ m.company.city }} &bull; {{ m.get_role_display }}</p>
             </div>
         </div>
-        <div class="flex space-x-2">
+
+        <!-- Active badge or Switch button -->
+        <div class="flex-shrink-0">
             {% if request.company.id == m.company.id %}
-            <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium">
+            <span class="bg-green-900 text-green-300 px-3 py-1.5 rounded-full text-sm font-medium">
                 ✓ Active
             </span>
             {% else %}
             <a href="{% url 'company_switch' m.company.pk %}"
-                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm">
+                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm inline-block text-center">
                 Switch
             </a>
             {% endif %}
         </div>
+
     </div>
     {% empty %}
-    <div class="bg-white rounded-xl shadow p-12 text-center text-gray-400">
-        <i class="fas fa-building text-4xl mb-3"></i>
+    <!-- Empty state -->
+    <div class="rounded-xl shadow p-12 text-center" style="background:var(--card-bg, #1e2330); border:1px solid var(--card-border, #2d3448); color:var(--text-muted, #9ca3af);">
+        <i class="fas fa-building text-4xl mb-3 block"></i>
         <p class="text-lg">No companies yet.</p>
-        <a href="{% url 'company_create' %}" class="text-blue-500 hover:underline mt-2 inline-block">
+        <a href="{% url 'company_create' %}" class="mt-3 inline-block text-blue-400 hover:underline">
             Create your first company
         </a>
     </div>
     {% endfor %}
+
 </div>
 {% endblock %}

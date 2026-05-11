@@ -1,12 +1,22 @@
 {% extends 'base.html' %}
 {% block title %}Employees{% endblock %}
 {% block page_title %}HR - Employees{% endblock %}
+
+{# ============================================================
+   employees.html
+   Fixes:
+   1. Replaced bg-white / text-gray-* with CSS variables
+   2. hover:opacity-80 replaced with bg tint hover on rows
+   3. Mobile card detail grid uses --card-bg for inner bg
+   4. Status/action badges use dark variants
+   ============================================================ #}
+
 {% block content %}
-<div class="rounded-xl shadow p-4 md:p-6" style="background:var(--card-bg, #fff); border:1px solid var(--card-border, #e5e7eb);">
+<div class="rounded-xl shadow p-4 md:p-6" style="background:var(--card-bg, #1e2330); border:1px solid var(--card-border, #2d3448);">
 
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
-        <h3 class="text-lg font-semibold" style="color:var(--text-main, #374151);">All Employees</h3>
+        <h3 class="text-lg font-semibold" style="color:var(--text-main, #e5e7eb);">All Employees</h3>
         <div class="flex flex-col sm:flex-row gap-2">
             <a href="{% url 'payroll_list' %}"
                 class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition text-center">
@@ -21,11 +31,11 @@
 
     {% if employees %}
 
-    <!-- DESKTOP: Normal table -->
+    <!-- DESKTOP: Table -->
     <div class="hidden md:block overflow-x-auto">
-        <table class="w-full text-sm">
+        <table class="w-full text-sm" style="min-width:650px;">
             <thead>
-                <tr class="text-xs uppercase" style="background:var(--table-head-bg, #f9fafb); color:var(--text-muted, #6b7280);">
+                <tr class="text-xs uppercase" style="background:var(--table-head-bg, #252b3b); color:var(--text-muted, #9ca3af);">
                     <th class="px-4 py-3 text-left">Emp #</th>
                     <th class="px-4 py-3 text-left">Name</th>
                     <th class="px-4 py-3 text-left">Department</th>
@@ -35,29 +45,32 @@
                     <th class="px-4 py-3 text-left">Actions</th>
                 </tr>
             </thead>
-            <tbody class="divide-y" style="border-color:var(--card-border, #f3f4f6);">
+            <tbody class="divide-y" style="border-color:var(--card-border, #2d3448);">
                 {% for emp in employees %}
-                <tr class="hover:opacity-80 transition">
-                    <td class="px-4 py-3 font-mono text-xs text-blue-600">{{ emp.employee_number }}</td>
-                    <td class="px-4 py-3 font-medium" style="color:var(--text-main, #1f2937);">{{ emp.full_name }}</td>
-                    <td class="px-4 py-3" style="color:var(--text-main, #4b5563);">{{ emp.get_department_display }}</td>
-                    <td class="px-4 py-3" style="color:var(--text-main, #4b5563);">{{ emp.get_employment_type_display }}</td>
-                    <td class="px-4 py-3 font-medium" style="color:var(--text-main, #1f2937);">KES {{ emp.basic_salary }}</td>
+                {# Hover uses bg tint — avoids dimming text like opacity-80 did #}
+                <tr style="transition:background 0.15s;"
+                    onmouseover="this.style.background='rgba(255,255,255,0.04)'"
+                    onmouseout="this.style.background='transparent'">
+                    <td class="px-4 py-3 font-mono text-xs text-blue-400">{{ emp.employee_number }}</td>
+                    <td class="px-4 py-3 font-medium" style="color:var(--text-main, #e5e7eb);">{{ emp.full_name }}</td>
+                    <td class="px-4 py-3" style="color:var(--text-main, #e5e7eb);">{{ emp.get_department_display }}</td>
+                    <td class="px-4 py-3" style="color:var(--text-muted, #9ca3af);">{{ emp.get_employment_type_display }}</td>
+                    <td class="px-4 py-3 font-medium text-green-400">KES {{ emp.basic_salary }}</td>
                     <td class="px-4 py-3">
                         {% if emp.is_active %}
-                        <span class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs">Active</span>
+                        <span class="bg-green-900 text-green-300 px-2 py-1 rounded-full text-xs">Active</span>
                         {% else %}
-                        <span class="bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs">Inactive</span>
+                        <span class="bg-red-900 text-red-300 px-2 py-1 rounded-full text-xs">Inactive</span>
                         {% endif %}
                     </td>
                     <td class="px-4 py-3">
-                        <div class="flex space-x-2">
+                        <div class="flex gap-2">
                             <a href="{% url 'employee_edit' emp.pk %}"
-                                class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-lg text-xs hover:bg-yellow-200">
+                                class="bg-yellow-900 text-yellow-300 px-3 py-1 rounded-lg text-xs hover:bg-yellow-800 transition">
                                 <i class="fas fa-edit"></i> Edit
                             </a>
                             <a href="{% url 'employee_delete' emp.pk %}"
-                                class="bg-red-100 text-red-700 px-3 py-1 rounded-lg text-xs hover:bg-red-200">
+                                class="bg-red-900 text-red-300 px-3 py-1 rounded-lg text-xs hover:bg-red-800 transition">
                                 <i class="fas fa-trash"></i>
                             </a>
                         </div>
@@ -71,46 +84,46 @@
     <!-- MOBILE: Card layout -->
     <div class="md:hidden flex flex-col gap-3">
         {% for emp in employees %}
-        <div class="rounded-lg p-4" style="background:var(--card-bg, #fff); border:1px solid var(--card-border, #e5e7eb);">
+        <div class="rounded-xl p-4" style="background:var(--table-head-bg, #252b3b); border:1px solid var(--card-border, #2d3448);">
 
-            <!-- Top: Name + Status -->
+            <!-- Top: Employee number + Name + Status -->
             <div class="flex items-start justify-between mb-3">
                 <div>
-                    <span class="font-mono text-xs text-blue-600">{{ emp.employee_number }}</span>
-                    <p class="font-semibold text-sm mt-0.5" style="color:var(--text-main, #1f2937);">{{ emp.full_name }}</p>
+                    <span class="font-mono text-xs text-blue-400">{{ emp.employee_number }}</span>
+                    <p class="font-semibold text-sm mt-0.5" style="color:var(--text-main, #e5e7eb);">{{ emp.full_name }}</p>
                 </div>
                 {% if emp.is_active %}
-                <span class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs whitespace-nowrap">Active</span>
+                <span class="bg-green-900 text-green-300 px-2 py-1 rounded-full text-xs whitespace-nowrap">Active</span>
                 {% else %}
-                <span class="bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs whitespace-nowrap">Inactive</span>
+                <span class="bg-red-900 text-red-300 px-2 py-1 rounded-full text-xs whitespace-nowrap">Inactive</span>
                 {% endif %}
             </div>
 
             <!-- Details grid -->
-            <div class="grid grid-cols-2 gap-2 text-xs mb-3 p-3 rounded-lg" style="background:var(--table-head-bg, #f9fafb);">
+            <div class="grid grid-cols-2 gap-2 text-xs p-3 rounded-lg mb-3" style="background:var(--card-bg, #1e2330);">
                 <div>
                     <p style="color:var(--text-muted, #9ca3af);">Department</p>
-                    <p class="font-medium mt-0.5" style="color:var(--text-main, #374151);">{{ emp.get_department_display }}</p>
+                    <p class="font-medium mt-0.5" style="color:var(--text-main, #e5e7eb);">{{ emp.get_department_display }}</p>
                 </div>
                 <div>
                     <p style="color:var(--text-muted, #9ca3af);">Type</p>
-                    <p class="font-medium mt-0.5" style="color:var(--text-main, #374151);">{{ emp.get_employment_type_display }}</p>
+                    <p class="font-medium mt-0.5" style="color:var(--text-main, #e5e7eb);">{{ emp.get_employment_type_display }}</p>
                 </div>
                 <div class="col-span-2">
                     <p style="color:var(--text-muted, #9ca3af);">Basic Salary</p>
-                    <p class="font-bold mt-0.5 text-green-700">KES {{ emp.basic_salary }}</p>
+                    <p class="font-bold mt-0.5 text-green-400">KES {{ emp.basic_salary }}</p>
                 </div>
             </div>
 
             <!-- Actions -->
-            <div class="flex gap-2 pt-2" style="border-top:1px solid var(--card-border, #e5e7eb);">
+            <div class="flex gap-2 pt-2" style="border-top:1px solid var(--card-border, #2d3448);">
                 <a href="{% url 'employee_edit' emp.pk %}"
-                    class="flex-1 bg-yellow-100 text-yellow-700 px-3 py-2 rounded-lg text-xs hover:bg-yellow-200 text-center">
-                    <i class="fas fa-edit"></i> Edit
+                    class="flex-1 bg-yellow-900 text-yellow-300 px-3 py-2 rounded-lg text-xs hover:bg-yellow-800 transition text-center font-medium">
+                    <i class="fas fa-edit mr-1"></i> Edit
                 </a>
                 <a href="{% url 'employee_delete' emp.pk %}"
-                    class="bg-red-100 text-red-700 px-3 py-2 rounded-lg text-xs hover:bg-red-200 text-center">
-                    <i class="fas fa-trash"></i> Delete
+                    class="flex-1 bg-red-900 text-red-300 px-3 py-2 rounded-lg text-xs hover:bg-red-800 transition text-center font-medium">
+                    <i class="fas fa-trash mr-1"></i> Delete
                 </a>
             </div>
 
@@ -121,7 +134,7 @@
     {% else %}
     <!-- Empty state -->
     <div class="text-center py-12" style="color:var(--text-muted, #9ca3af);">
-        <i class="fas fa-users text-4xl mb-3"></i>
+        <i class="fas fa-users text-4xl mb-3 block"></i>
         <p>No employees yet.</p>
         <a href="{% url 'employee_add' %}"
             class="mt-3 inline-block bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm">

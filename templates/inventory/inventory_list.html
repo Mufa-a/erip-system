@@ -2,22 +2,32 @@
 {% block title %}Inventory{% endblock %}
 {% block page_title %}Inventory{% endblock %}
 {% block content %}
-<div class="rounded-xl shadow p-4 md:p-6" style="background:var(--card-bg, #fff); border:1px solid var(--card-border, #e5e7eb);">
-    
+
+{# ============================================================
+   inventory.html
+   Fixes:
+   1. All text/bg colors now use CSS variables (dark-theme safe)
+   2. Removed hover:opacity-80 — replaced with hover bg tint
+   3. Mobile card layout included
+   ============================================================ #}
+
+<div class="rounded-xl shadow p-4 md:p-6" style="background:var(--card-bg, #1e2330); border:1px solid var(--card-border, #2d3448);">
+
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
-        <h3 class="text-lg font-semibold" style="color:var(--text-main, #374151);">Stock Levels</h3>
+        <h3 class="text-lg font-semibold" style="color:var(--text-main, #e5e7eb);">Stock Levels</h3>
         <a href="{% url 'stock_movement' %}"
-            class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-center">
+            class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-center inline-flex items-center gap-2 w-fit">
             <i class="fas fa-exchange-alt"></i> Stock Movements
         </a>
     </div>
 
-    <!-- DESKTOP: Normal table (hidden on mobile) -->
+    <!-- DESKTOP: Table (hidden on mobile) -->
     <div class="hidden md:block overflow-x-auto">
-        <table class="w-full text-sm">
+        <table class="w-full text-sm" style="min-width:600px;">
             <thead>
-                <tr class="text-xs uppercase" style="background:var(--table-head-bg, #f9fafb); color:var(--text-muted, #6b7280);">
+                {# Table header uses --table-head-bg and --text-muted for column labels #}
+                <tr class="text-xs uppercase" style="background:var(--table-head-bg, #252b3b); color:var(--text-muted, #9ca3af);">
                     <th class="px-4 py-3 text-left">#</th>
                     <th class="px-4 py-3 text-left">Product</th>
                     <th class="px-4 py-3 text-left">SKU</th>
@@ -26,20 +36,29 @@
                     <th class="px-4 py-3 text-left">Status</th>
                 </tr>
             </thead>
-            <tbody class="divide-y" style="border-color:var(--card-border, #f3f4f6);">
+            <tbody class="divide-y" style="border-color:var(--card-border, #2d3448);">
                 {% for product in products %}
-                <tr class="hover:opacity-80 transition">
-                    <td class="px-4 py-3" style="color:var(--text-muted, #6b7280);">{{ forloop.counter }}</td>
-                    <td class="px-4 py-3 font-medium" style="color:var(--text-main, #1f2937);">{{ product.name }}</td>
-                    <td class="px-4 py-3 font-mono text-xs" style="color:var(--text-muted, #6b7280);">{{ product.sku }}</td>
-                    <td class="px-4 py-3" style="color:var(--text-main, #4b5563);">{{ product.category|default:"-" }}</td>
-                    <td class="px-4 py-3 font-bold" style="color:var(--text-main, #1f2937);">{{ product.stock }}</td>
+                {# Row hover uses a subtle bg tint instead of opacity which dims text #}
+                <tr style="transition: background 0.15s;"
+                    onmouseover="this.style.background='rgba(255,255,255,0.04)'"
+                    onmouseout="this.style.background='transparent'">
+                    <td class="px-4 py-3 text-xs" style="color:var(--text-muted, #9ca3af);">{{ forloop.counter }}</td>
+                    <td class="px-4 py-3 font-medium" style="color:var(--text-main, #e5e7eb);">{{ product.name }}</td>
+                    <td class="px-4 py-3 font-mono text-xs" style="color:var(--text-muted, #9ca3af);">{{ product.sku }}</td>
+                    <td class="px-4 py-3" style="color:var(--text-main, #e5e7eb);">{{ product.category|default:"-" }}</td>
+                    <td class="px-4 py-3 font-bold" style="color:var(--text-main, #e5e7eb);">{{ product.stock }}</td>
                     <td class="px-4 py-3">
                         {% if product.is_low_stock %}
-                        <span class="bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs">⚠ Low Stock</span>
+                        <span class="bg-red-900 text-red-300 px-2 py-1 rounded-full text-xs font-medium">⚠ Low Stock</span>
                         {% else %}
-                        <span class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs">✓ OK</span>
+                        <span class="bg-green-900 text-green-300 px-2 py-1 rounded-full text-xs font-medium">✓ OK</span>
                         {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="px-4 py-8 text-center text-sm" style="color:var(--text-muted, #9ca3af);">
+                        No products found.
                     </td>
                 </tr>
                 {% endfor %}
@@ -50,40 +69,41 @@
     <!-- MOBILE: Card layout (hidden on desktop) -->
     <div class="md:hidden flex flex-col gap-3">
         {% for product in products %}
-        <div class="rounded-lg p-4" style="background:var(--card-bg, #fff); border:1px solid var(--card-border, #e5e7eb);">
-            
-            <!-- Card Top: Product name + Status badge -->
+        {# Each product is a dark card matching the app theme #}
+        <div class="rounded-xl p-4" style="background:var(--table-head-bg, #252b3b); border:1px solid var(--card-border, #2d3448);">
+
+            <!-- Top: Product name + Status badge -->
             <div class="flex items-start justify-between mb-3">
                 <div>
                     <span class="text-xs" style="color:var(--text-muted, #9ca3af);">#{{ forloop.counter }}</span>
-                    <p class="font-semibold text-sm" style="color:var(--text-main, #1f2937);">{{ product.name }}</p>
+                    <p class="font-semibold text-sm mt-0.5" style="color:var(--text-main, #e5e7eb);">{{ product.name }}</p>
                 </div>
                 {% if product.is_low_stock %}
-                <span class="bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs whitespace-nowrap">⚠ Low Stock</span>
+                <span class="bg-red-900 text-red-300 px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap">⚠ Low Stock</span>
                 {% else %}
-                <span class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs whitespace-nowrap">✓ OK</span>
+                <span class="bg-green-900 text-green-300 px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap">✓ OK</span>
                 {% endif %}
             </div>
 
-            <!-- Card Details -->
-            <div class="grid grid-cols-3 gap-2 text-xs">
+            <!-- Details grid: SKU / Category / Stock -->
+            <div class="grid grid-cols-3 gap-2 text-xs p-3 rounded-lg" style="background:var(--card-bg, #1e2330);">
                 <div>
                     <p style="color:var(--text-muted, #9ca3af);">SKU</p>
-                    <p class="font-mono font-medium" style="color:var(--text-main, #374151);">{{ product.sku }}</p>
+                    <p class="font-mono font-medium mt-0.5" style="color:var(--text-main, #e5e7eb);">{{ product.sku }}</p>
                 </div>
                 <div>
                     <p style="color:var(--text-muted, #9ca3af);">Category</p>
-                    <p class="font-medium" style="color:var(--text-main, #374151);">{{ product.category|default:"-" }}</p>
+                    <p class="font-medium mt-0.5" style="color:var(--text-main, #e5e7eb);">{{ product.category|default:"-" }}</p>
                 </div>
                 <div>
                     <p style="color:var(--text-muted, #9ca3af);">Stock</p>
-                    <p class="font-bold text-sm" style="color:var(--text-main, #1f2937);">{{ product.stock }}</p>
+                    <p class="font-bold text-sm mt-0.5" style="color:var(--text-main, #e5e7eb);">{{ product.stock }}</p>
                 </div>
             </div>
 
         </div>
         {% empty %}
-        <p class="text-center py-8" style="color:var(--text-muted, #9ca3af);">No products found.</p>
+        <p class="text-center py-8 text-sm" style="color:var(--text-muted, #9ca3af);">No products found.</p>
         {% endfor %}
     </div>
 
