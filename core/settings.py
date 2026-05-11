@@ -161,8 +161,8 @@ EMAIL_PORT          = config('EMAIL_PORT',          default=587, cast=int)
 EMAIL_HOST_USER     = config('EMAIL_HOST_USER',     default='')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 EMAIL_USE_TLS       = config('EMAIL_USE_TLS',       default=True, cast=bool)
-DEFAULT_FROM_EMAIL  = config('EMAIL_HOST_USER',     default='noreply@erip.com')
-
+DEFAULT_FROM_EMAIL  = config('EMAIL_HOST_USER',     default='analystmufa@gmail.com')
+EMAIL_TIMEOUT = config('EMAIL_TIMEOUT', default=10, cast=int)
 # ============================================================
 # M-PESA
 # ============================================================
