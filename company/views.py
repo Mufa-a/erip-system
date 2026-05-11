@@ -71,7 +71,10 @@ def company_settings(request):
         return redirect('company_settings')
 
     return render(request, 'company/company_settings.html', {
-        'company': company
+        'company': company,
+        'all_users': User.objects.exclude(
+            companies__company=company
+        ).order_by('username'),
     })
 
 
