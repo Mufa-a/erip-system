@@ -3,7 +3,6 @@
 {% block page_title %}Invoice Detail{% endblock %}
 {% block content %}
 
-<!-- Print styles -->
 <style>
   @media print {
     nav, aside, .no-print, header, footer { display: none !important; }
@@ -14,7 +13,7 @@
 
 <div class="max-w-3xl mx-auto">
 
-  <!-- Top actions (hidden when printing) -->
+  <!-- Top Actions -->
   <div class="flex justify-between items-center mb-4 no-print">
     <a href="{% url 'invoice_list' %}" class="text-gray-500 hover:text-gray-700 text-sm flex items-center gap-1">
       <i class="fas fa-arrow-left"></i> Back to Invoices
@@ -23,11 +22,11 @@
       <button onclick="window.print()"
         class="bg-gray-700 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition text-sm flex items-center gap-1">
         <i class="fas fa-print"></i> Print / Save PDF
-        <a href="{% url 'invoice_send_email' invoice.pk %}"
-    class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition">
-    <i class="fas fa-envelope mr-2"></i>Send Email
-</a>
       </button>
+      <a href="{% url 'invoice_send_email' invoice.pk %}"
+        class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition text-sm flex items-center gap-1">
+        <i class="fas fa-envelope"></i> Send Email
+      </a>
       <a href="{% url 'payment_add' %}"
         class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition text-sm flex items-center gap-1">
         <i class="fas fa-money-bill"></i> Record Payment
@@ -65,7 +64,7 @@
       </div>
     </div>
 
-    <!-- Billing info -->
+    <!-- Billing Info -->
     <div class="grid grid-cols-2 gap-6 mb-8">
       <div>
         <p class="text-xs text-gray-400 uppercase tracking-wider mb-2">Bill To</p>
@@ -78,7 +77,7 @@
         <p class="text-sm text-gray-500">Issue Date: <span class="text-gray-800 font-medium">{{ invoice.issue_date }}</span></p>
         <p class="text-sm text-gray-500">Due Date: <span class="text-gray-800 font-medium">{{ invoice.due_date }}</span></p>
         {% if invoice.created_by %}
-        <p class="text-sm text-gray-500">Created by: <span class="text-gray-700">{{ invoice.created_by.get_full_name|default:invoice.created_by.username }}</span></p>
+          <p class="text-sm text-gray-500">Created by: <span class="text-gray-700">{{ invoice.created_by.get_full_name|default:invoice.created_by.username }}</span></p>
         {% endif %}
       </div>
     </div>
@@ -95,16 +94,16 @@
       </thead>
       <tbody class="divide-y divide-gray-100">
         {% for item in invoice.items.all %}
-        <tr>
-          <td class="px-4 py-3 text-gray-800 font-medium">{{ item.product.name }}</td>
-          <td class="px-4 py-3 text-right text-gray-600">{{ item.quantity }}</td>
-          <td class="px-4 py-3 text-right text-gray-600">{{ item.unit_price|floatformat:2 }}</td>
-          <td class="px-4 py-3 text-right font-semibold text-gray-800">{{ item.total|floatformat:2 }}</td>
-        </tr>
+          <tr>
+            <td class="px-4 py-3 text-gray-800 font-medium">{{ item.product.name }}</td>
+            <td class="px-4 py-3 text-right text-gray-600">{{ item.quantity }}</td>
+            <td class="px-4 py-3 text-right text-gray-600">{{ item.unit_price|floatformat:2 }}</td>
+            <td class="px-4 py-3 text-right font-semibold text-gray-800">{{ item.total|floatformat:2 }}</td>
+          </tr>
         {% empty %}
-        <tr>
-          <td colspan="4" class="px-4 py-6 text-center text-gray-400">No items on this invoice.</td>
-        </tr>
+          <tr>
+            <td colspan="4" class="px-4 py-6 text-center text-gray-400">No items on this invoice.</td>
+          </tr>
         {% endfor %}
       </tbody>
     </table>
@@ -139,41 +138,41 @@
       </div>
     </div>
 
+    <!-- Notes -->
     {% if invoice.notes %}
-    <div class="mt-8 pt-6 border-t border-gray-100">
-      <p class="text-xs text-gray-400 uppercase tracking-wider mb-2">Notes</p>
-      <p class="text-gray-600 text-sm">{{ invoice.notes }}</p>
-    </div>
+      <div class="mt-8 pt-6 border-t border-gray-100">
+        <p class="text-xs text-gray-400 uppercase tracking-wider mb-2">Notes</p>
+        <p class="text-gray-600 text-sm">{{ invoice.notes }}</p>
+      </div>
     {% endif %}
 
-    <!-- Print footer -->
+    <!-- Print Footer -->
     <div class="hidden print:block mt-10 pt-6 border-t border-gray-200 text-center text-xs text-gray-400">
       Thank you for your business.
     </div>
 
-  </div><!-- /card -->
+  </div><!-- /Invoice Card -->
 
-  <!-- Bottom actions (hidden when printing) -->
-  <div class="flex justify-between mt-6 mb-10 no-print">
+  <!-- Bottom Actions -->
+  <div class="flex justify-between items-center mt-6 mb-10 no-print">
     <a href="{% url 'invoice_delete' invoice.pk %}"
       class="text-red-400 hover:text-red-600 text-sm flex items-center gap-1">
       <i class="fas fa-trash-alt"></i> Delete Invoice
     </a>
-    <div class="flex space-x-3 mt-8">
-    <a href="{% url 'payment_add' %}"
-        class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition">
-        <i class="fas fa-money-bill mr-2"></i>Record Payment
-    </a>
-    <a href="{% url 'invoice_print' invoice.pk %}"
-        target="_blank"
-        class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">
-        <i class="fas fa-print mr-2"></i>Print Invoice
-    </a>
-    <a href="{% url 'invoice_list' %}"
-        class="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-300 transition">
+    <div class="flex gap-3">
+      <a href="{% url 'payment_add' %}"
+        class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition text-sm flex items-center gap-2">
+        <i class="fas fa-money-bill"></i> Record Payment
+      </a>
+      <a href="{% url 'invoice_print' invoice.pk %}" target="_blank"
+        class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition text-sm flex items-center gap-2">
+        <i class="fas fa-print"></i> Print Invoice
+      </a>
+      <a href="{% url 'invoice_list' %}"
+        class="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-300 transition text-sm">
         Back to Invoices
-    </a>
-</div>
+      </a>
+    </div>
   </div>
 
 </div>

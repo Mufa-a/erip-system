@@ -75,7 +75,7 @@ def company_settings(request):
         messages.success(request, 'Company settings updated!')
         return redirect('company_settings')
 
-    # ── Pass M-Pesa status for the badge in the template ──
+    # ── M-Pesa status for badge ──
     mpesa_configured = False
     mpesa_active     = False
     try:
@@ -83,7 +83,7 @@ def company_settings(request):
         mpesa_configured = mpesa.is_configured
         mpesa_active     = mpesa.is_active and mpesa.is_configured
     except Exception:
-        pass  # No row yet — badge shows "Not Configured"
+        pass
 
     return render(request, 'company/company_settings.html', {
         'company':          company,
@@ -132,28 +132,58 @@ def mpesa_settings(request):
     )
 
     if request.method == 'POST':
-        environment     = request.POST.get('environment', 'sandbox')
-        shortcode       = request.POST.get('shortcode', '').strip()
-        callback_url    = request.POST.get('callback_url', '').strip()
         consumer_key    = request.POST.get('consumer_key', '').strip()
         consumer_secret = request.POST.get('consumer_secret', '').strip()
         passkey         = request.POST.get('passkey', '').strip()
+        shortcode       = request.POST.get('shortcode', '').strip()
+        environment     = request.POST.get('environment', 'sandbox')
+        callback_url    = request.POST.get('callback_url', '').strip()
 
+        # ── Validate: at least the 4 required credentials must be filled ──
+        # on a fresh save. If already configured, allow partial updates.
+        if not mpesa_cfg.is_configured:
+            # First time setup — all 4 fields are required
+            missing = []
+            if not consumer_key:    missing.append('Consumer Key')
+            if not consumer_secret: missing.append('Consumer Secret')
+            if not shortcode:       missing.append('Shortcode')
+            if not passkey:         missing.append('Passkey')
+
+            if missing:
+                messages.error(
+                    request,
+                    f"Please fill in: {', '.join(missing)}"
+                )
+                return render(request, 'company/mpesa_settings.html', {
+                    'mpesa_cfg':           mpesa_cfg,
+                    'company':             request.company,
+                    'has_consumer_key':    bool(mpesa_cfg._consumer_key),
+                    'has_consumer_secret': bool(mpesa_cfg._consumer_secret),
+                    'has_passkey':         bool(mpesa_cfg._passkey),
+                    'shortcode_display':   mpesa_cfg.shortcode or '',
+                })
+
+        # ── Only update a field if a new value was typed ──
+        # This protects existing encrypted values from being wiped
+        if consumer_key:
+            mpesa_cfg.consumer_key = consumer_key       # setter encrypts
+        if consumer_secret:
+            mpesa_cfg.consumer_secret = consumer_secret # setter encrypts
+        if passkey:
+            mpesa_cfg.passkey = passkey                 # setter encrypts
+        if shortcode:
+            mpesa_cfg.shortcode = shortcode             # setter encrypts
+
+        # Environment and callback_url are always updated (not sensitive)
         mpesa_cfg.environment  = environment
         mpesa_cfg.callback_url = callback_url
 
-        # Only overwrite encrypted fields if user typed a new value
-        if shortcode:
-            mpesa_cfg.shortcode = shortcode
-        if consumer_key:
-            mpesa_cfg.consumer_key = consumer_key
-        if consumer_secret:
-            mpesa_cfg.consumer_secret = consumer_secret
-        if passkey:
-            mpesa_cfg.passkey = passkey
+        # Reset is_active if credentials were changed — force re-test
+        if any([consumer_key, consumer_secret, passkey, shortcode]):
+            mpesa_cfg.is_active = False
 
         mpesa_cfg.save()
-        messages.success(request, 'M-Pesa settings saved successfully!')
+        messages.success(request, 'M-Pesa settings saved! Please test the connection.')
         return redirect('mpesa_settings')
 
     return render(request, 'company/mpesa_settings.html', {
@@ -185,7 +215,6 @@ def mpesa_test(request):
 
         from core.mpesa import get_mpesa_token
 
-        # ✅ 'environment' matches the parameter name in core/mpesa.py
         token = get_mpesa_token(
             consumer_key    = mpesa_cfg.consumer_key,
             consumer_secret = mpesa_cfg.consumer_secret,
