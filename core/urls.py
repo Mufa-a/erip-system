@@ -32,6 +32,7 @@ urlpatterns = [
     path('company/',    include('company.urls')),
     path('billing/',    include('billing.urls')),
     path('health/',     health_check,   name='health_check'),
+     path('', include('verification.urls', namespace='verification')),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

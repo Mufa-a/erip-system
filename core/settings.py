@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'hr',
     'company',
     'billing',
+    'verification',
 ]
 
 MIDDLEWARE = [
