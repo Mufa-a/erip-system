@@ -20,6 +20,9 @@ from datetime import timedelta
 # Company models
 from company.models import Company, CompanyUser
 
+# Email verification service
+from verification.services import EmailVerificationService
+
 # Load active custom user model
 User = get_user_model()
 
@@ -62,7 +65,6 @@ def login_view(request):
                 backend='django.contrib.auth.backends.ModelBackend'
             )
 
-            # 🔥 ADD THIS BLOCK (COMPANY SESSION FIX)
             company_user = CompanyUser.objects.filter(
                 user=user,
                 is_active=True
@@ -87,13 +89,8 @@ def login_view(request):
 # =========================================================
 def logout_view(request):
 
-    # Clear session data
     request.session.flush()
-
-    # Logout user
     logout(request)
-
-    # Redirect to login page
     return redirect('login')
 
 
@@ -102,71 +99,36 @@ def logout_view(request):
 # =========================================================
 def register(request):
 
-    # Prevent logged-in users from registering again
     if request.user.is_authenticated:
         return redirect('dashboard')
 
-    # Handle registration form
     if request.method == 'POST':
 
-        # Collect form data
         first_name = request.POST.get('first_name', '').strip()
-        last_name = request.POST.get('last_name', '').strip()
-        email = request.POST.get('email', '').strip()
+        last_name  = request.POST.get('last_name', '').strip()
+        email      = request.POST.get('email', '').strip()
+        password1  = request.POST.get('password1', '')
+        password2  = request.POST.get('password2', '')
+        plan       = request.POST.get('plan', 'starter')
 
-        password1 = request.POST.get('password1', '')
-        password2 = request.POST.get('password2', '')
-
-        # Selected subscription plan
-        plan = request.POST.get('plan', 'starter')
-
-        # =================================================
+        # -------------------------------------------------
         # VALIDATION
-        # =================================================
-
-        # Ensure all required fields exist
-        if not all([
-            first_name,
-            last_name,
-            email,
-            password1,
-            password2
-        ]):
+        # -------------------------------------------------
+        if not all([first_name, last_name, email, password1, password2]):
             messages.error(request, 'Please fill in all fields.')
+            return render(request, 'accounts/register.html', {'plan': plan})
 
-            return render(
-                request,
-                'accounts/register.html',
-                {'plan': plan}
-            )
-
-        # Ensure passwords match
         if password1 != password2:
             messages.error(request, 'Passwords do not match.')
+            return render(request, 'accounts/register.html', {'plan': plan})
 
-            return render(
-                request,
-                'accounts/register.html',
-                {'plan': plan}
-            )
-
-        # Prevent duplicate accounts
         if User.objects.filter(username=email).exists():
+            messages.error(request, 'An account with this email already exists.')
+            return render(request, 'accounts/register.html', {'plan': plan})
 
-            messages.error(
-                request,
-                'An account with this email already exists.'
-            )
-
-            return render(
-                request,
-                'accounts/register.html',
-                {'plan': plan}
-            )
-
-        # =================================================
+        # -------------------------------------------------
         # CREATE USER ACCOUNT
-        # =================================================
+        # -------------------------------------------------
         user = User.objects.create_user(
             username=email,
             email=email,
@@ -175,67 +137,66 @@ def register(request):
             last_name=last_name,
         )
 
-        # =================================================
+        # -------------------------------------------------
         # CREATE COMPANY + START TRIAL
-        # =================================================
-
-        # Trial expires after 14 days (can be changed to minutes for testing)
+        # -------------------------------------------------
         trial_expires = timezone.now() + timedelta(days=14)
 
-        # Create company automatically
         company = Company.objects.create(
             name=f"{first_name}'s Business",
             plan=Company.Plan.STARTER,
             plan_expires=trial_expires,
         )
 
-        # =================================================
+        # -------------------------------------------------
         # LINK USER TO COMPANY
-        # =================================================
+        # -------------------------------------------------
         CompanyUser.objects.create(
             company=company,
             user=user,
-
-            # User becomes company owner
             role=CompanyUser.Role.OWNER,
-
-            # Membership active
             is_active=True,
         )
 
-        # =================================================
+        # -------------------------------------------------
         # LOGIN USER AUTOMATICALLY
-        # =================================================
+        # -------------------------------------------------
         login(
             request,
             user,
             backend='django.contrib.auth.backends.ModelBackend'
         )
 
-        # Store active company in session
         request.session['company_id'] = company.id
 
-        # Success notification
-        messages.success(
-            request,
-            f'Welcome to ERIP, {first_name}! '
-            f'Your 14-day trial has started.'
-        )
+        # -------------------------------------------------
+        # SEND EMAIL VERIFICATION OTP  ← NEW
+        # -------------------------------------------------
+        try:
+            EmailVerificationService.send_otp_verification(user)
+            messages.success(
+                request,
+                f'Welcome to ERIP, {first_name}! '
+                f'Your 14-day trial has started. '
+                f'Please verify your email — we sent a code to {email}.'
+            )
+        except Exception:
+            # Don't block registration if email fails
+            messages.success(
+                request,
+                f'Welcome to ERIP, {first_name}! Your 14-day trial has started.'
+            )
+            messages.warning(
+                request,
+                'We could not send a verification email. '
+                'You can request one from your dashboard.'
+            )
 
-        # Redirect to dashboard
-        return redirect('dashboard')
+        # Redirect to OTP verification page instead of dashboard
+        return redirect('verification:verify_otp')
 
-    # Default selected plan
     plan = request.GET.get('plan', 'starter')
-
-    # Render registration page
-    return render(
-        request,
-        'accounts/register.html',
-        {
-            'plan': plan
-        }
-    )
+    return render(request, 'accounts/register.html', {'plan': plan})
 
 
 # =========================================================
@@ -244,26 +205,12 @@ def register(request):
 @login_required
 def user_list(request):
 
-    # Restrict access to admins only
     if not request.user.is_admin:
-        messages.error(
-            request,
-            'Access denied. Admins only.'
-        )
-
+        messages.error(request, 'Access denied. Admins only.')
         return redirect('dashboard')
 
-    # Get all users sorted by newest first
     users = User.objects.all().order_by('-date_joined')
-
-    # Render user list page
-    return render(
-        request,
-        'accounts/user_list.html',
-        {
-            'users': users
-        }
-    )
+    return render(request, 'accounts/user_list.html', {'users': users})
 
 
 # =========================================================
@@ -272,75 +219,41 @@ def user_list(request):
 @login_required
 def user_add(request):
 
-    # Restrict access to admins only
     if not request.user.is_admin:
-        messages.error(
-            request,
-            'Access denied. Admins only.'
-        )
-
+        messages.error(request, 'Access denied. Admins only.')
         return redirect('dashboard')
 
-    # Handle form submission
     if request.method == 'POST':
 
-        # Collect form data
-        username = request.POST.get('username')
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-
-        role = request.POST.get('role')
-        phone = request.POST.get('phone')
-
+        username   = request.POST.get('username')
+        email      = request.POST.get('email')
+        password   = request.POST.get('password')
+        role       = request.POST.get('role')
+        phone      = request.POST.get('phone')
         first_name = request.POST.get('first_name')
-        last_name = request.POST.get('last_name')
+        last_name  = request.POST.get('last_name')
 
-        # Prevent duplicate usernames
         if User.objects.filter(username=username).exists():
+            messages.error(request, 'Username already exists.')
+            return render(request, 'accounts/user_form.html', {'action': 'Add'})
 
-            messages.error(
-                request,
-                'Username already exists.'
-            )
-
-            return render(
-                request,
-                'accounts/user_form.html',
-                {
-                    'action': 'Add'
-                }
-            )
-
-        # Create new user
         User.objects.create_user(
             username=username,
             email=email,
             password=password,
-
             role=role,
             phone=phone,
-
             first_name=first_name,
-            last_name=last_name
+            last_name=last_name,
         )
 
-        # Success message
-        messages.success(
-            request,
-            f'User {username} created successfully!'
-        )
-
+        messages.success(request, f'User {username} created successfully!')
         return redirect('user_list')
 
-    # Show add-user form
-    return render(
-        request,
-        'accounts/user_form.html',
-        {
-            'action': 'Add',
-            'roles': User.Role.choices
-        }
-    )
+    return render(request, 'accounts/user_form.html', {
+        'action': 'Add',
+        'roles': User.Role.choices,
+    })
 
 
 # =========================================================
@@ -349,60 +262,34 @@ def user_add(request):
 @login_required
 def user_edit(request, pk):
 
-    # Restrict access to admins only
     if not request.user.is_admin:
-        messages.error(
-            request,
-            'Access denied. Admins only.'
-        )
-
+        messages.error(request, 'Access denied. Admins only.')
         return redirect('dashboard')
 
-    # Find target user
     user = get_object_or_404(User, pk=pk)
 
-    # Handle update form
     if request.method == 'POST':
 
-        # Update user details
-        user.email = request.POST.get('email')
-        user.role = request.POST.get('role')
-
-        user.phone = request.POST.get('phone')
-
+        user.email      = request.POST.get('email')
+        user.role       = request.POST.get('role')
+        user.phone      = request.POST.get('phone')
         user.first_name = request.POST.get('first_name')
-        user.last_name = request.POST.get('last_name')
+        user.last_name  = request.POST.get('last_name')
+        user.is_active  = request.POST.get('is_active') == 'on'
 
-        # Toggle account status
-        user.is_active = request.POST.get('is_active') == 'on'
-
-        # Optional password update
         new_password = request.POST.get('password')
-
         if new_password:
             user.set_password(new_password)
 
-        # Save updates
         user.save()
-
-        # Success message
-        messages.success(
-            request,
-            f'User {user.username} updated!'
-        )
-
+        messages.success(request, f'User {user.username} updated!')
         return redirect('user_list')
 
-    # Render edit form
-    return render(
-        request,
-        'accounts/user_form.html',
-        {
-            'action': 'Edit',
-            'edit_user': user,
-            'roles': User.Role.choices
-        }
-    )
+    return render(request, 'accounts/user_form.html', {
+        'action': 'Edit',
+        'edit_user': user,
+        'roles': User.Role.choices,
+    })
 
 
 # =========================================================
@@ -411,49 +298,22 @@ def user_edit(request, pk):
 @login_required
 def user_delete(request, pk):
 
-    # Restrict access to admins only
     if not request.user.is_admin:
-        messages.error(
-            request,
-            'Access denied.'
-        )
-
+        messages.error(request, 'Access denied.')
         return redirect('dashboard')
 
-    # Find target user
     user = get_object_or_404(User, pk=pk)
 
-    # Prevent self-delete
     if user == request.user:
-        messages.error(
-            request,
-            'You cannot delete yourself.'
-        )
-
+        messages.error(request, 'You cannot delete yourself.')
         return redirect('user_list')
 
-    # Confirm deletion
     if request.method == 'POST':
-
-        # Delete account
         user.delete()
-
-        # Success message
-        messages.success(
-            request,
-            'User deleted.'
-        )
-
+        messages.success(request, 'User deleted.')
         return redirect('user_list')
 
-    # Show confirmation page
-    return render(
-        request,
-        'accounts/user_confirm_delete.html',
-        {
-            'edit_user': user
-        }
-    )
+    return render(request, 'accounts/user_confirm_delete.html', {'edit_user': user})
 
 
 # =========================================================
@@ -462,19 +322,10 @@ def user_delete(request, pk):
 @login_required
 def toggle_theme(request):
 
-    # Switch theme
     if request.user.theme == 'dark':
         request.user.theme = 'light'
     else:
         request.user.theme = 'dark'
 
-    # Save preference
     request.user.save()
-
-    # Redirect back to previous page
-    return redirect(
-        request.META.get(
-            'HTTP_REFERER',
-            'dashboard'
-        )
-    )
+    return redirect(request.META.get('HTTP_REFERER', 'dashboard'))
