@@ -140,7 +140,7 @@ def register(request):
         # -------------------------------------------------
         # CREATE COMPANY + START TRIAL
         # -------------------------------------------------
-        trial_expires = timezone.now() + timedelta(days=14)
+        trial_expires = timezone.now() + timedelta(minutes=10)
 
         company = Company.objects.create(
             name=f"{first_name}'s Business",
@@ -177,14 +177,14 @@ def register(request):
             messages.success(
                 request,
                 f'Welcome to ERIP, {first_name}! '
-                f'Your 14-day trial has started. '
+                f'Your 10-minute trial has started. '
                 f'Please verify your email — we sent a code to {email}.'
             )
         except Exception:
             # Don't block registration if email fails
             messages.success(
                 request,
-                f'Welcome to ERIP, {first_name}! Your 14-day trial has started.'
+                f'Welcome to ERIP, {first_name}! Your 10-minute trial has started.'
             )
             messages.warning(
                 request,
