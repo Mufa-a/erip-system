@@ -1,0 +1,380 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Verify Your Email — ERIP</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0d0f14;
+      --surface:   #13161e;
+      --border:    #22273a;
+      --accent:    #4f7cff;
+      --accent2:   #7c4fff;
+      --text:      #e8eaf0;
+      --muted:     #6b7080;
+      --success:   #34d399;
+      --error:     #f87171;
+    }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text);
+      overflow: hidden;
+    }
+
+    /* Ambient background blobs */
+    .blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.18;
+      pointer-events: none;
+    }
+    .blob-1 {
+      width: 500px; height: 500px;
+      background: var(--accent);
+      top: -150px; left: -150px;
+      animation: float 8s ease-in-out infinite alternate;
+    }
+    .blob-2 {
+      width: 400px; height: 400px;
+      background: var(--accent2);
+      bottom: -100px; right: -100px;
+      animation: float 10s ease-in-out infinite alternate-reverse;
+    }
+    @keyframes float {
+      from { transform: translate(0, 0) scale(1); }
+      to   { transform: translate(30px, 20px) scale(1.05); }
+    }
+
+    /* Card */
+    .card {
+      position: relative;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 48px 40px 40px;
+      width: 100%;
+      max-width: 440px;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.5);
+      animation: slideUp 0.5s cubic-bezier(0.16,1,0.3,1) both;
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Logo / brand mark */
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 36px;
+    }
+    .brand-mark {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, #7c4fff, #9d6fff);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+    .brand-name {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: 0.5px;
+      color: var(--text);
+    }
+
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 26px;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 10px;
+    }
+    .subtitle {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 36px;
+    }
+    .subtitle strong {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    /* Messages */
+    .messages { margin-bottom: 20px; }
+    .msg {
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+    .msg.error   { background: rgba(248,113,113,0.12); color: var(--error);   border: 1px solid rgba(248,113,113,0.25); }
+    .msg.success { background: rgba(52,211,153,0.12);  color: var(--success); border: 1px solid rgba(52,211,153,0.25); }
+    .msg.warning { background: rgba(251,191,36,0.12);  color: #fbbf24;        border: 1px solid rgba(251,191,36,0.25); }
+
+    /* OTP boxes */
+    .otp-label {
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+    .otp-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+    .otp-row input {
+      flex: 1;
+      height: 60px;
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      text-align: center;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+      caret-color: var(--accent);
+    }
+    .otp-row input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(79,124,255,0.18);
+      transform: translateY(-2px);
+    }
+    .otp-row input.filled {
+      border-color: rgba(79,124,255,0.5);
+    }
+
+    /* Hidden real input */
+    #otp-hidden { display: none; }
+
+    /* Submit button */
+    .btn {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      font-family: 'Syne', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn:hover  { opacity: 0.92; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(79,124,255,0.35); }
+    .btn:active { transform: translateY(0); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    /* Resend */
+    .resend-row {
+      margin-top: 22px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .resend-row form { display: inline; }
+    .resend-btn {
+      background: none;
+      border: none;
+      color: var(--accent);
+      font-size: 13px;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      padding: 0;
+      font-weight: 500;
+      transition: opacity 0.2s;
+    }
+    .resend-btn:hover { opacity: 0.75; }
+    .resend-btn:disabled { color: var(--muted); cursor: not-allowed; }
+
+    /* Countdown */
+    #countdown { font-weight: 500; color: var(--text); }
+
+    /* Divider */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 24px 0 20px;
+    }
+
+    .back-link {
+      display: block;
+      text-align: center;
+      font-size: 13px;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--text); }
+
+    /* Shake animation on error */
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20%,60%  { transform: translateX(-6px); }
+      40%,80%  { transform: translateX(6px); }
+    }
+    .shake { animation: shake 0.4s ease; }
+  </style>
+</head>
+<body>
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+
+  <div class="card">
+
+    <div class="brand">
+      <div class="brand-mark">⚡</div>
+      <span class="brand-name">ERIP</span>
+    </div>
+
+    <h1>Check your inbox</h1>
+    <p class="subtitle">
+      We sent a 6-digit code to
+      <strong>{{ request.user.email }}</strong>.
+      Enter it below to verify your account.
+    </p>
+
+    {% if messages %}
+      <div class="messages">
+        {% for message in messages %}
+          <div class="msg {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <form method="POST" action="{% url 'verification:verify_otp' %}" id="otp-form">
+      {% csrf_token %}
+      <input type="hidden" name="otp" id="otp-hidden"/>
+
+      <div class="otp-label">Verification code</div>
+      <div class="otp-row" id="otp-boxes">
+        <input type="text" inputmode="numeric" maxlength="1" class="otp-digit" autocomplete="off"/>
+        <input type="text" inputmode="numeric" maxlength="1" class="otp-digit" autocomplete="off"/>
+        <input type="text" inputmode="numeric" maxlength="1" class="otp-digit" autocomplete="off"/>
+        <input type="text" inputmode="numeric" maxlength="1" class="otp-digit" autocomplete="off"/>
+        <input type="text" inputmode="numeric" maxlength="1" class="otp-digit" autocomplete="off"/>
+        <input type="text" inputmode="numeric" maxlength="1" class="otp-digit" autocomplete="off"/>
+      </div>
+
+      <button type="submit" class="btn" id="submit-btn" disabled>Verify Email</button>
+    </form>
+
+    <div class="resend-row">
+      Didn't receive it?&nbsp;
+      <form method="POST" action="{% url 'verification:request_otp' %}">
+        {% csrf_token %}
+        <button class="resend-btn" id="resend-btn" disabled>
+          Resend in <span id="countdown">60</span>s
+        </button>
+      </form>
+    </div>
+
+    <hr class="divider"/>
+    <a href="{% url 'dashboard' %}" class="back-link">← Back to dashboard</a>
+
+  </div>
+
+  <script>
+    const digits  = document.querySelectorAll('.otp-digit');
+    const hidden  = document.getElementById('otp-hidden');
+    const submitBtn = document.getElementById('submit-btn');
+    const resendBtn = document.getElementById('resend-btn');
+    const countdown = document.getElementById('countdown');
+    const form    = document.getElementById('otp-form');
+    const boxes   = document.getElementById('otp-boxes');
+
+    // ── OTP input logic ──────────────────────────────────────
+    digits.forEach((input, i) => {
+      input.addEventListener('input', () => {
+        input.value = input.value.replace(/\D/g, '').slice(-1);
+        if (input.value) {
+          input.classList.add('filled');
+          if (i < digits.length - 1) digits[i + 1].focus();
+        } else {
+          input.classList.remove('filled');
+        }
+        syncHidden();
+      });
+
+      input.addEventListener('keydown', e => {
+        if (e.key === 'Backspace' && !input.value && i > 0) {
+          digits[i - 1].focus();
+          digits[i - 1].value = '';
+          digits[i - 1].classList.remove('filled');
+          syncHidden();
+        }
+      });
+
+      // Allow paste on any box
+      input.addEventListener('paste', e => {
+        e.preventDefault();
+        const pasted = (e.clipboardData || window.clipboardData)
+          .getData('text').replace(/\D/g, '').slice(0, 6);
+        pasted.split('').forEach((ch, j) => {
+          if (digits[j]) {
+            digits[j].value = ch;
+            digits[j].classList.add('filled');
+          }
+        });
+        syncHidden();
+        const next = Math.min(pasted.length, digits.length - 1);
+        digits[next].focus();
+      });
+    });
+
+    function syncHidden() {
+      const val = [...digits].map(d => d.value).join('');
+      hidden.value = val;
+      submitBtn.disabled = val.length < 6;
+    }
+
+    // Auto-focus first box
+    digits[0].focus();
+
+    // ── Form submit: shake on empty ───────────────────────────
+    form.addEventListener('submit', e => {
+      if (hidden.value.length < 6) {
+        e.preventDefault();
+        boxes.classList.remove('shake');
+        void boxes.offsetWidth; // reflow
+        boxes.classList.add('shake');
+      }
+    });
+
+    // ── Resend countdown ─────────────────────────────────────
+    let secs = 60;
+    const timer = setInterval(() => {
+      secs--;
+      countdown.textContent = secs;
+      if (secs <= 0) {
+        clearInterval(timer);
+        resendBtn.disabled = false;
+        resendBtn.innerHTML = 'Resend code';
+      }
+    }, 1000);
+  </script>
+</body>
+</html>
