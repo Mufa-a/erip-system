@@ -1,7 +1,10 @@
 from pathlib import Path
 from decouple import config
 import sentry_sdk
+import ssl
+import certifi
 
+EMAIL_SSL_CONTEXT = ssl.create_default_context(cafile=certifi.where())
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-me-in-production')
