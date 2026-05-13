@@ -18,11 +18,12 @@ class User(AbstractUser):
     profile_picture = models.ImageField(
         upload_to='profiles/', blank=True, null=True
     )
-    theme = models.CharField(                          # ✅ added
+    theme = models.CharField(
         max_length=10,
         choices=[('light', 'Light'), ('dark', 'Dark')],
         default='light'
     )
+    email_verified = models.BooleanField(default=False)  # ← NEW
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

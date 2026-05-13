@@ -19,6 +19,12 @@ def landing_page(request):
 @login_required(login_url='/accounts/login/')
 def dashboard(request):
     user = request.user
+
+    # Block unverified users — redirect to OTP page
+    if not user.email_verified:
+        messages.warning(request, 'Please verify your email to access the dashboard.')
+        return redirect('verification:verify_otp')
+
     context = {
         'user': user,
         'first_name': user.first_name or user.email,
