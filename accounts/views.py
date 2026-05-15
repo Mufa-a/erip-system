@@ -58,12 +58,20 @@ def login_view(request):
                 user = None
 
         if user is not None:
+    # Block login if email not verified
+    if not user.email_verified:
+        messages.error(
+            request,
+            'Please verify your email before logging in. '
+            'Check your inbox for the verification code.'
+        )
+        return redirect('verification:verify_otp')
 
-            login(
-                request,
-                user,
-                backend='django.contrib.auth.backends.ModelBackend'
-            )
+    login(
+        request,
+        user,
+        backend='django.contrib.auth.backends.ModelBackend'
+    )
 
             company_user = CompanyUser.objects.filter(
                 user=user,
@@ -142,11 +150,15 @@ def register(request):
         # -------------------------------------------------
         trial_expires = timezone.now() + timedelta(minutes=10)
 
-        company = Company.objects.create(
-            name=f"{first_name}'s Business",
-            plan=Company.Plan.STARTER,
-            plan_expires=trial_expires,
-        )
+        company_name = request.POST.get('company_name', '').strip()
+if not company_name:
+    company_name = f"{first_name}'s Business"
+
+company = Company.objects.create(
+    name=company_name,
+    plan=Company.Plan.STARTER,
+    plan_expires=trial_expires,
+)
 
         # -------------------------------------------------
         # LINK USER TO COMPANY
