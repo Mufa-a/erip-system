@@ -56,7 +56,26 @@ class VerifyOTPView(View):
             return JsonResponse({"success": success, "message": message})
         if success:
             messages.success(request, message)
-            return redirect("verification:success")
+
+            # Log user in after verification
+            from django.contrib.auth import login as auth_login
+            auth_login(
+                request,
+                request.user,
+                backend='django.contrib.auth.backends.ModelBackend'
+            )
+
+            # Set company session
+            pending_company_id = request.session.get('pending_company_id')
+            if pending_company_id:
+                request.session['company_id'] = pending_company_id
+                try:
+                    del request.session['pending_company_id']
+                    del request.session['pending_user_id']
+                except KeyError:
+                    pass
+
+            return redirect("dashboard")
         else:
             messages.error(request, message)
             return render(request, self.template_name)
