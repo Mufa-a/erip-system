@@ -39,27 +39,52 @@ class VerifyOTPView(View):
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request):
+        # If no pending user in session — redirect to register
+        if not request.session.get('pending_user_id'):
+            if not request.user.is_authenticated:
+                return redirect('login')
         return render(request, self.template_name)
 
     def post(self, request):
         otp   = request.POST.get("otp", "").strip()
-        email = request.POST.get("email") or request.user.email
+        email = request.POST.get("email", "").strip()
+
         if not otp:
             messages.error(request, "Please enter the OTP code.")
             return render(request, self.template_name)
+
+        # Get user from session or request
+        pending_user_id = request.session.get('pending_user_id')
+        if pending_user_id:
+            try:
+                user = User.objects.get(pk=pending_user_id)
+            except User.DoesNotExist:
+                messages.error(request, "Session expired. Please register again.")
+                return redirect('register')
+        elif request.user.is_authenticated:
+            user = request.user
+        else:
+            messages.error(request, "Session expired. Please log in again.")
+            return redirect('login')
+
+        if not email:
+            email = user.email
+
         success, message, verification = EmailVerificationService.verify_otp(
-            request.user, otp, email=email
+            user, otp, email=email
         )
+
         if request.headers.get("X-Requested-With") == "XMLHttpRequest":
             return JsonResponse({"success": success, "message": message})
+
         if success:
             messages.success(request, message)
 
-            # Log user in after verification
+            # Now log user in
             from django.contrib.auth import login as auth_login
             auth_login(
                 request,
-                request.user,
+                user,
                 backend='django.contrib.auth.backends.ModelBackend'
             )
 
@@ -72,8 +97,16 @@ class VerifyOTPView(View):
                     del request.session['pending_user_id']
                 except KeyError:
                     pass
+            else:
+                # Existing user logging in after verification
+                company_user = company_user = user.companies.filter(
+                    is_active=True
+                ).select_related('company').first()
+                if company_user:
+                    request.session['company_id'] = company_user.company.id
 
             return redirect("dashboard")
+
         else:
             messages.error(request, message)
             return render(request, self.template_name)
