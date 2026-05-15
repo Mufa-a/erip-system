@@ -1,29 +1,13 @@
-# Django shortcut utilities
 from django.shortcuts import render, redirect, get_object_or_404
-
-# Authentication functions
 from django.contrib.auth import authenticate, login, logout
-
-# Django messages framework
 from django.contrib import messages
-
-# Restrict views to logged-in users only
 from django.contrib.auth.decorators import login_required
-
-# Get custom user model
 from django.contrib.auth import get_user_model
-
-# Time utilities for trial expiration
 from django.utils import timezone
 from datetime import timedelta
-
-# Company models
 from company.models import Company, CompanyUser
-
-# Email verification service
 from verification.services import EmailVerificationService
 
-# Load active custom user model
 User = get_user_model()
 
 
@@ -38,13 +22,9 @@ def login_view(request):
     if request.method == 'POST':
 
         login_input = request.POST.get('username', '').strip()
-        password = request.POST.get('password')
+        password    = request.POST.get('password')
 
-        user = authenticate(
-            request,
-            username=login_input,
-            password=password
-        )
+        user = authenticate(request, username=login_input, password=password)
 
         if user is None:
             try:
@@ -58,20 +38,21 @@ def login_view(request):
                 user = None
 
         if user is not None:
-    # Block login if email not verified
-    if not user.email_verified:
-        messages.error(
-            request,
-            'Please verify your email before logging in. '
-            'Check your inbox for the verification code.'
-        )
-        return redirect('verification:verify_otp')
 
-    login(
-        request,
-        user,
-        backend='django.contrib.auth.backends.ModelBackend'
-    )
+            # Block login if email not verified
+            if not user.email_verified:
+                messages.error(
+                    request,
+                    'Please verify your email before logging in. '
+                    'Check your inbox for the verification code.'
+                )
+                return redirect('verification:verify_otp')
+
+            login(
+                request,
+                user,
+                backend='django.contrib.auth.backends.ModelBackend'
+            )
 
             company_user = CompanyUser.objects.filter(
                 user=user,
@@ -84,10 +65,7 @@ def login_view(request):
             return redirect('dashboard')
 
         else:
-            messages.error(
-                request,
-                'Invalid username/email or password.'
-            )
+            messages.error(request, 'Invalid username/email or password.')
 
     return render(request, 'login.html')
 
@@ -96,7 +74,6 @@ def login_view(request):
 # LOGOUT VIEW
 # =========================================================
 def logout_view(request):
-
     request.session.flush()
     logout(request)
     return redirect('login')
@@ -113,15 +90,13 @@ def register(request):
     if request.method == 'POST':
 
         first_name = request.POST.get('first_name', '').strip()
-        last_name  = request.POST.get('last_name', '').strip()
-        email      = request.POST.get('email', '').strip()
-        password1  = request.POST.get('password1', '')
-        password2  = request.POST.get('password2', '')
+        last_name  = request.POST.get('last_name',  '').strip()
+        email      = request.POST.get('email',      '').strip()
+        password1  = request.POST.get('password1',  '')
+        password2  = request.POST.get('password2',  '')
         plan       = request.POST.get('plan', 'starter')
 
-        # -------------------------------------------------
-        # VALIDATION
-        # -------------------------------------------------
+        # Validation
         if not all([first_name, last_name, email, password1, password2]):
             messages.error(request, 'Please fill in all fields.')
             return render(request, 'accounts/register.html', {'plan': plan})
@@ -134,9 +109,7 @@ def register(request):
             messages.error(request, 'An account with this email already exists.')
             return render(request, 'accounts/register.html', {'plan': plan})
 
-        # -------------------------------------------------
-        # CREATE USER ACCOUNT
-        # -------------------------------------------------
+        # Create user account
         user = User.objects.create_user(
             username=email,
             email=email,
@@ -145,24 +118,20 @@ def register(request):
             last_name=last_name,
         )
 
-        # -------------------------------------------------
-        # CREATE COMPANY + START TRIAL
-        # -------------------------------------------------
+        # Create company + start trial
         trial_expires = timezone.now() + timedelta(minutes=10)
 
         company_name = request.POST.get('company_name', '').strip()
-if not company_name:
-    company_name = f"{first_name}'s Business"
+        if not company_name:
+            company_name = f"{first_name}'s Business"
 
-company = Company.objects.create(
-    name=company_name,
-    plan=Company.Plan.STARTER,
-    plan_expires=trial_expires,
-)
+        company = Company.objects.create(
+            name=company_name,
+            plan=Company.Plan.STARTER,
+            plan_expires=trial_expires,
+        )
 
-        # -------------------------------------------------
-        # LINK USER TO COMPANY
-        # -------------------------------------------------
+        # Link user to company
         CompanyUser.objects.create(
             company=company,
             user=user,
@@ -170,9 +139,7 @@ company = Company.objects.create(
             is_active=True,
         )
 
-        # -------------------------------------------------
-        # LOGIN USER AUTOMATICALLY
-        # -------------------------------------------------
+        # Login user automatically
         login(
             request,
             user,
@@ -181,9 +148,7 @@ company = Company.objects.create(
 
         request.session['company_id'] = company.id
 
-        # -------------------------------------------------
-        # SEND EMAIL VERIFICATION OTP  ← NEW
-        # -------------------------------------------------
+        # Send email verification OTP
         try:
             EmailVerificationService.send_otp_verification(user)
             messages.success(
@@ -193,7 +158,6 @@ company = Company.objects.create(
                 f'Please verify your email — we sent a code to {email}.'
             )
         except Exception:
-            # Don't block registration if email fails
             messages.success(
                 request,
                 f'Welcome to ERIP, {first_name}! Your 10-minute trial has started.'
@@ -204,7 +168,6 @@ company = Company.objects.create(
                 'You can request one from your dashboard.'
             )
 
-        # Redirect to OTP verification page instead of dashboard
         return redirect('verification:verify_otp')
 
     plan = request.GET.get('plan', 'starter')
@@ -325,7 +288,9 @@ def user_delete(request, pk):
         messages.success(request, 'User deleted.')
         return redirect('user_list')
 
-    return render(request, 'accounts/user_confirm_delete.html', {'edit_user': user})
+    return render(request, 'accounts/user_confirm_delete.html', {
+        'edit_user': user
+    })
 
 
 # =========================================================
