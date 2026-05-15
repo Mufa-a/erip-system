@@ -29,8 +29,6 @@ class RequestOTPView(View):
         messages.success(request, f"A verification code has been sent to {email}.")
         return redirect("verification:verify_otp")
 
-
-@method_decorator(login_required, name="dispatch")
 class VerifyOTPView(View):
     template_name = "verification/verify_otp.html"
 
