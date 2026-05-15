@@ -150,27 +150,28 @@ def register(request):
         request.session['pending_company_id'] = company.id
         request.session['pending_user_id']    = user.id
 
+        
         # Send email verification OTP
-        try:
-            EmailVerificationService.send_otp_verification(user)
-            messages.success(
-                request,
-                f'Welcome to ERIP, {first_name}! '
-                f'Your 10-minute trial has started. '
-                f'Please verify your email — we sent a code to {email}.'
-            )
-        except Exception:
-            messages.success(
-                request,
-                f'Welcome to ERIP, {first_name}! Your 10-minute trial has started.'
-            )
-            messages.warning(
-                request,
-                'We could not send a verification email. '
-                'You can request one from your dashboard.'
-            )
+try:
+    EmailVerificationService.send_otp_verification(user)
+    messages.success(
+        request,
+        f'Welcome to ERIP, {first_name}! '
+        f'Your 10-minute trial has started. '
+        f'Please verify your email — we sent a code to {email}.'
+    )
+except Exception:
+    messages.success(
+        request,
+        f'Welcome to ERIP, {first_name}! Your 10-minute trial has started.'
+    )
+    messages.warning(
+        request,
+        'We could not send a verification email. '
+        'You can request one from your dashboard.'
+    )
 
-        return redirect('verification:verify_otp')
+return redirect('verification:verify_otp')
 
     plan = request.GET.get('plan', 'starter')
     return render(request, 'accounts/register.html', {'plan': plan})
