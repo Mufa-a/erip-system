@@ -146,7 +146,13 @@ def register(request):
             backend='django.contrib.auth.backends.ModelBackend'
         )
 
-        request.session['company_id'] = company.id
+        # Store for after verification - DO NOT login yet
+        request.session['pending_company_id'] = company.id
+        request.session['pending_user_id']    = user.id
+
+        # Send email verification OTP
+        try:
+            EmailVerificationService.send_otp_verification(user)
 
         # Send email verification OTP
         try:
