@@ -153,10 +153,6 @@ def register(request):
         # Send email verification OTP
         try:
             EmailVerificationService.send_otp_verification(user)
-
-        # Send email verification OTP
-        try:
-            EmailVerificationService.send_otp_verification(user)
             messages.success(
                 request,
                 f'Welcome to ERIP, {first_name}! '
