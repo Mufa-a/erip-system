@@ -39,7 +39,6 @@ def login_view(request):
 
         if user is not None:
 
-            # Block login if email not verified
             if not user.email_verified:
                 messages.error(
                     request,
@@ -96,7 +95,6 @@ def register(request):
         password2  = request.POST.get('password2',  '')
         plan       = request.POST.get('plan', 'starter')
 
-        # Validation
         if not all([first_name, last_name, email, password1, password2]):
             messages.error(request, 'Please fill in all fields.')
             return render(request, 'accounts/register.html', {'plan': plan})
@@ -109,7 +107,6 @@ def register(request):
             messages.error(request, 'An account with this email already exists.')
             return render(request, 'accounts/register.html', {'plan': plan})
 
-        # Create user account
         user = User.objects.create_user(
             username=email,
             email=email,
@@ -118,7 +115,6 @@ def register(request):
             last_name=last_name,
         )
 
-        # Create company + start trial
         trial_expires = timezone.now() + timedelta(minutes=10)
 
         company_name = request.POST.get('company_name', '').strip()
@@ -131,7 +127,6 @@ def register(request):
             plan_expires=trial_expires,
         )
 
-        # Link user to company
         CompanyUser.objects.create(
             company=company,
             user=user,
@@ -139,39 +134,35 @@ def register(request):
             is_active=True,
         )
 
-        # Login user automatically
         login(
             request,
             user,
             backend='django.contrib.auth.backends.ModelBackend'
         )
 
-        # Store for after verification - DO NOT login yet
         request.session['pending_company_id'] = company.id
         request.session['pending_user_id']    = user.id
 
-        
-        # Send email verification OTP
-try:
-    EmailVerificationService.send_otp_verification(user)
-    messages.success(
-        request,
-        f'Welcome to ERIP, {first_name}! '
-        f'Your 10-minute trial has started. '
-        f'Please verify your email — we sent a code to {email}.'
-    )
-except Exception:
-    messages.success(
-        request,
-        f'Welcome to ERIP, {first_name}! Your 10-minute trial has started.'
-    )
-    messages.warning(
-        request,
-        'We could not send a verification email. '
-        'You can request one from your dashboard.'
-    )
+        try:
+            EmailVerificationService.send_otp_verification(user)
+            messages.success(
+                request,
+                f'Welcome to ERIP, {first_name}! '
+                f'Your 10-minute trial has started. '
+                f'Please verify your email — we sent a code to {email}.'
+            )
+        except Exception:
+            messages.success(
+                request,
+                f'Welcome to ERIP, {first_name}! Your 10-minute trial has started.'
+            )
+            messages.warning(
+                request,
+                'We could not send a verification email. '
+                'You can request one from your dashboard.'
+            )
 
-return redirect('verification:verify_otp')
+        return redirect('verification:verify_otp')
 
     plan = request.GET.get('plan', 'starter')
     return render(request, 'accounts/register.html', {'plan': plan})
